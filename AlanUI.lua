@@ -23,7 +23,7 @@ fallaba" o "FIX:" pegado en el punto exacto del codigo donde se reparo.
 El codigo debe describir lo que HACE hoy, no su historial de bugs.
 
     Carga desde GitHub (recomendado):
-        local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI-/main/AlanUI.lua"))()
+        local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/AlanUI.lua"))()
 
     Carga desde archivo local (si tenes AlanUI.lua en el workspace):
         local AlanUI = loadstring(readfile("AlanUI.lua"))()
