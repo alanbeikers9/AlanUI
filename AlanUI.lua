@@ -22,9 +22,11 @@ de la version correspondiente), NUNCA como un comentario "antes esto
 fallaba" o "FIX:" pegado en el punto exacto del codigo donde se reparo.
 El codigo debe describir lo que HACE hoy, no su historial de bugs.
 
-    Carga (un solo archivo):
-        local AlanUI = loadstring(readfile("AlanUI.lua"))()
+    Carga desde GitHub (recomendado):
+        local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI-/main/AlanUI.lua"))()
 
+    Carga desde archivo local (si tenes AlanUI.lua en el workspace):
+        local AlanUI = loadstring(readfile("AlanUI.lua"))()
     -- ── USO BASICO ───────────────────────────────────────────
     local Ventana = AlanUI:CrearVentana({
         Titulo        = "Mi Script",
