@@ -4,6 +4,8 @@
 
 <p align="center">
   <a href="README_es.md">🇪🇸 Leer en Español</a>
+  &nbsp;·&nbsp;
+  <a href="#-try-the-interactive-showcase">🎮 Try the showcase</a>
 </p>
 
 A UI library for Roblox scripts, optimized to run well on both PC and mobile. Built around a clear priority order:
@@ -468,7 +470,7 @@ game:GetService("TweenService"):Create(myFrame, info, {BackgroundTransparency = 
 Load the library with `loadstring`:
 
 ```lua
-local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlanbeikersFF/AlanUI/main/AlanUI.lua"))()
+local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/AlanUI.lua"))()
 
 -- ── CREATE MAIN WINDOW ──
 local Ventana = AlanUI:CrearVentana({
@@ -516,6 +518,19 @@ AlanUI:Notificar({
 > ℹ️ **Important note:** when you call `CrearVentana`, the interface **already comes with the "🔧 Preinstalled" tab added automatically** (FPS, executor info, theme selector, orientation, window size). You don't need to create or call it — it's already there once the window finishes opening. Only if you don't want it do you need to explicitly disable it (see below).
 
 > Note: function and parameter names (`CrearVentana`, `Texto`, `Defecto`, etc.) stay in Spanish across languages — that's the library's actual API.
+
+---
+
+## 🎮 Try the interactive showcase
+
+Would you rather see everything working before reading the reference? Run the **showcase**: an AlanUI window with **5 tabs** (Controls, Window & layout, Alerts, States, APIs & diagnostics) where every control and function appears live, with a tooltip explaining what it demonstrates.
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/examples/AlanUI_Vitrina.lua"))()
+```
+
+- You don't need to load AlanUI first: the showcase loads it by itself.
+- The code lives in [`examples/AlanUI_Vitrina.lua`](examples/AlanUI_Vitrina.lua), so it also works as a **complete, commented example** to copy from.
 
 ---
 
@@ -1500,6 +1515,8 @@ Ventana:Destruir()
 
 ## 🧩 Full Example (all functions together)
 
+> 🎮 Prefer to see it running in-game? Run the [interactive showcase](#-try-the-interactive-showcase).
+
 This is a reference script that uses **every** public function in AlanUI, the way a developer would actually write it in a real script. Copy it, paste it into an executor, and see how each piece behaves.
 
 ```lua
@@ -1508,7 +1525,7 @@ This is a reference script that uses **every** public function in AlanUI, the wa
 --  Demonstrates every public function of the library.
 -- ══════════════════════════════════════════════════════════════
 
-local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlanbeikersFF/AlanUI/main/AlanUI.lua"))()
+local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/AlanUI.lua"))()
 
 -- ── 1. MAIN WINDOW ──
 -- The "🔧 Preinstalled" tab is added automatically here — no need to call it.

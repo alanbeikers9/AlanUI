@@ -1,0 +1,1490 @@
+-- ══════════════════════════════════════════════════════════════
+--  AlanUI_Vitrina.lua
+--  Vitrina interactiva de TODAS las características de AlanUI.
+--  Cada control aparece con un Tooltip explicando qué prueba.
+-- ══════════════════════════════════════════════════════════════
+
+local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/AlanUI.lua"))()
+
+-- ── Tema custom de demo (aparece en el selector de temas) ──────
+AlanUI.ThemeManager:AgregarTema("DemoNeon", {
+    Background      = Color3.fromRGB(30, 15, 45),
+    BackgroundDark  = Color3.fromRGB(18, 8, 30),
+    BackgroundLight = Color3.fromRGB(45, 25, 65),
+    Accent          = Color3.fromRGB(220, 60, 200),
+    AccentLight     = Color3.fromRGB(240, 130, 230),
+    Highlight       = Color3.fromRGB(255, 180, 250),
+    Text            = Color3.fromRGB(240, 240, 240),
+    TextDark        = Color3.fromRGB(220, 220, 220),
+    Border          = Color3.fromRGB(10, 5, 18),
+    Panel           = Color3.fromRGB(22, 12, 35),
+    PanelClaro      = Color3.fromRGB(35, 20, 55),
+    Fila            = Color3.fromRGB(28, 16, 42),
+    Entrada         = Color3.fromRGB(18, 10, 30),
+    Apagado         = Color3.fromRGB(60, 60, 60),
+})
+
+-- ── Ventana principal ───────────────────────────────────────────
+local V = AlanUI:CrearVentana({
+    Titulo       = "AlanUI Vitrina",
+    Subtitulo    = "Panel de evaluación",
+    TamanoX      = 640,
+    TamanoY      = 480,
+    TeclaToggle  = Enum.KeyCode.RightControl,
+    Buscador     = true,
+    AutoGuardar  = false,
+})
+
+V:AgregarSelectorTemas()
+
+-- ══════════════════════════════════════════════════════════════
+--  TAB 1 — CONTROLES
+-- ══════════════════════════════════════════════════════════════
+local TabCtrl = V:CrearTab("Controles", "🎛️")
+
+-- ── Botones ─────────────────────────────────────────────────────
+local SBot = TabCtrl:CrearSeccion("Botones")
+SBot:Parrafo({
+    Titulo = "Botón",
+    Contenido = "Ejecuta un Callback al tocarlo. Variantes: normal, con icono, con texto a la derecha (Interact), Async (con spinner), RichText.",
+})
+
+SBot:Boton({ Texto = "Botón simple", Tooltip = "Botón básico sin extras",
+    Callback = function() AlanUI:Notificar({ Titulo = "Click", Texto = "Botón simple pulsado", Duracion = 2 }) end })
+
+SBot:Boton({ Texto = "Guardar cambios", Icono = "💾",
+    Tooltip = "Botón con icono emoji antepuesto al texto",
+    Callback = function() AlanUI:Notificar({ Titulo = "Guardar", Texto = "Icono 💾 probado", Duracion = 2 }) end })
+
+SBot:Boton({ Texto = "Estado del sistema", Interact = "🟢 Activo",
+    Tooltip = "Botón con texto dinámico a la derecha (Interact)",
+    Callback = function() AlanUI:Notificar({ Titulo = "Estado", Texto = "Interact pulsado", Duracion = 2 }) end })
+
+SBot:Boton({ Texto = "Sincronizar datos", Interact = "~1.5s", Async = true,
+    Tooltip = "Botón Async: muestra un spinner mientras el Callback corre",
+    Callback = function() task.wait(1.5) end })
+
+SBot:Boton({ Texto = "Aviso importante", RichText = true, Icono = "⚠️",
+    Tooltip = "RichText activo: acepta tags como <b> y <font color='#...'>",
+    Callback = function() AlanUI:Notificar({ Titulo = "⚠️ Aviso", Texto = "RichText probado", Tipo = "Warning", Duracion = 3 }) end })
+
+-- ── Interruptores ───────────────────────────────────────────────
+local SInt = TabCtrl:CrearSeccion("Interruptores (Toggle y Casilla)")
+SInt:Parrafo({ Titulo = "Toggle / Casilla", Contenido = "Mismo comportamiento (booleano), distinto estilo. Con 'Desactivar' se apaga otro al encenderse." })
+
+SInt:Toggle({ Texto = "Toggle simple", Flag = "v_tog", Defecto = false,
+    Tooltip = "Interruptor estándar" })
+
+SInt:Casilla({ Texto = "Casilla simple", Flag = "v_cas", Defecto = false,
+    Tooltip = "Estilo checkbox con dos barritas" })
+
+SInt:Toggle({ Texto = "Modo A (apaga B)", Flag = "v_modoA", Defecto = true,
+    Desactivar = { "v_modoB" },
+    Tooltip = "Al activarlo, apaga 'Modo B' automáticamente" })
+
+SInt:Casilla({ Texto = "Modo B (apaga A)", Flag = "v_modoB", Defecto = false,
+    Desactivar = { "v_modoA" },
+    Tooltip = "Al activarlo, apaga 'Modo A' automáticamente" })
+
+SInt:Toggle({ Texto = "Toggle con atajo [F]", Flag = "v_togTecla", Defecto = false,
+    Tecla = Enum.KeyCode.F,
+    Tooltip = "También se alterna presionando F en el juego" })
+
+-- ── Valores numéricos ──────────────────────────────────────────
+local SNum = TabCtrl:CrearSeccion("Valores numéricos")
+SNum:Parrafo({ Titulo = "Slider / RangeSlider / NumberStepper", Contenido = "Tres formas de elegir números: rango continuo, rango doble (min-max) y valor exacto con botones." })
+
+SNum:Slider({ Texto = "Velocidad", Flag = "v_slider", Min = 0, Max = 100, Incremento = 5, Sufijo = "%", Defecto = 50,
+    Tooltip = "Slider estándar con incrementos de 5" })
+
+SNum:Slider({ Texto = "FOV con marcas", Flag = "v_sliderPasos", Min = 70, Max = 120, Incremento = 10, Defecto = 90, Pasos = true,
+    Tooltip = "Pasos = true dibuja marcas visuales en cada múltiplo de Incremento" })
+
+SNum:RangeSlider({ Texto = "Distancia (rango)", Flag = "v_range", Min = 0, Max = 200, Incremento = 10, Sufijo = "m", Defecto = { min = 40, max = 150 },
+    Tooltip = "Dos manijas: elegís mínimo y máximo al mismo tiempo" })
+
+SNum:NumberStepper({ Texto = "Cantidad exacta", Flag = "v_step", Min = 1, Max = 999, Incremento = 1, Defecto = 10, Sufijo = " pcs",
+    Tooltip = "Botones − / + con campo editable. Flechas ↑↓ con el campo enfocado" })
+
+SNum:NumberStepper({ Texto = "Decimal (paso 0.25)", Flag = "v_stepDec", Min = 0, Max = 10, Incremento = 0.25, Defecto = 1.5,
+    Tooltip = "Incremento decimal: muestra automáticamente 2 decimales" })
+
+-- ── Texto ───────────────────────────────────────────────────────
+local STxt = TabCtrl:CrearSeccion("Campos de texto")
+STxt:Parrafo({ Titulo = "Input / TagInput", Contenido = "Input libre, validado (número/patrón) o multilínea. TagInput genera chips con coma." })
+
+STxt:Input({ Texto = "Nombre", Flag = "v_inNombre", Defecto = "", Placeholder = "Escribí tu nombre...",
+    Tooltip = "Campo de texto libre, 1 línea" })
+
+STxt:Input({ Texto = "Edad (1-99)", Flag = "v_inEdad", Tipo = "number", Min = 1, Max = 99, Defecto = "18",
+    Tooltip = "Tipo='number': solo acepta números, los clampa a Min/Max" })
+
+STxt:Input({ Texto = "Hex (patrón)", Flag = "v_inHex", Tipo = "pattern", Regex = "^%x+$",
+    Placeholder = "solo 0-9 y A-F",
+    Tooltip = "Tipo='pattern': valida contra el Regex al perder el foco" })
+
+STxt:Input({ Texto = "Notas (multilínea)", Flag = "v_inNotas", Tipo = "textarea", Alto = 80, Defecto = "",
+    Placeholder = "Escribí varias líneas...",
+    Tooltip = "Tipo='textarea': caja multilínea con AutoScroll interno" })
+
+STxt:TagInput({ Texto = "Ignorados", Flag = "v_tags", Defecto = { "Amigo1", "Amigo2" },
+    Placeholder = "Nombre y Enter (o pegá a,b,c)...",
+    MaxTags = 8,
+    Tooltip = "Chips con ×: separador es la coma. Backspace con caja vacía borra el último" })
+
+-- ── Selección ───────────────────────────────────────────────────
+local SSel = TabCtrl:CrearSeccion("Selección")
+SSel:Parrafo({ Titulo = "Dropdown / RadioGroup", Contenido = "Dropdown para listas largas (con buscador auto >8). RadioGroup para 2-4 opciones visibles en fila." })
+
+SSel:Dropdown({ Texto = "Método", Flag = "v_ddSimple",
+    Opciones = { "Tween", "CFrame", "Instant", "Safe Jump" }, Defecto = "Tween",
+    Tooltip = "Dropdown simple: 4 opciones" })
+
+SSel:Dropdown({ Texto = "Efectos (multi)", Flag = "v_ddMulti", Multi = true,
+    Opciones = { "Fuego", "Hielo", "Veneno", "Rayo", "Tierra" }, Defecto = { "Fuego" },
+    Tooltip = "Multi=true: cada opción es un checkbox. Get() devuelve una tabla" })
+
+SSel:Dropdown({ Texto = "Arma (opciones ricas)", Flag = "v_ddRico",
+    Opciones = {
+        { Titulo = "Espada", Icono = "⚔️", Descripcion = "Rápida, poco daño" },
+        { Titulo = "Hacha", Icono = "🪓", Descripcion = "Lenta, alto daño" },
+        { Tipo = "Divider" },
+        { Titulo = "Lanza", Icono = "🔱", Locked = true, LockedTitle = "Nivel 20" },
+        "Arco",
+    }, Defecto = "Espada",
+    Tooltip = "Opciones con Icono, Descripcion, Locked y separadores" })
+
+SSel:RadioGroup({ Texto = "Modo", Flag = "v_radio",
+    Opciones = { "Farm", "PvP", "Raid" }, Defecto = "Farm",
+    Tooltip = "RadioGroup: 3 opciones visibles, selección única" })
+
+-- ── Especiales ──────────────────────────────────────────────────
+local SEsp = TabCtrl:CrearSeccion("Controles especiales")
+SEsp:Parrafo({ Titulo = "ColorPicker / Keybind", Contenido = "ColorPicker con sliders RGB + swatches + Hex. Keybind captura tecla del teclado (o gamepad/táctil adaptativo)." })
+
+SEsp:ColorPicker({ Texto = "Color principal", Flag = "v_color",
+    Defecto = Color3.fromRGB(90, 140, 210),
+    Tooltip = "Click en la cabecera para desplegar los sliders RGB" })
+
+SEsp:Keybind({ Texto = "Tecla de activación", Flag = "v_kbSimple",
+    Defecto = Enum.KeyCode.E,
+    Tooltip = "Click para capturar una nueva tecla" })
+
+SEsp:Keybind({ Texto = "Combo con modificadores", Flag = "v_kbMods",
+    ConModificadores = true, Defecto = { KeyCode = Enum.KeyCode.G, Ctrl = true, Shift = true, Alt = false },
+    Tooltip = "Captura también Ctrl/Shift/Alt al asignar" })
+
+-- ── Visualización ──────────────────────────────────────────────
+local SVis = TabCtrl:CrearSeccion("Visualización")
+SVis:Parrafo({ Titulo = "Label / Progreso / Imagen", Contenido = "Elementos de solo lectura: Label (texto dinámico), Progreso (barra), Imagen (con Aspecto)." })
+
+local lblSimple = SVis:Label({ Texto = "Label simple", Flag = "v_lbl", Valor = "valor inicial",
+    Tooltip = "Set() para cambiar el valor, SetColor() para colorearlo" })
+
+local lblAuto = SVis:Label({ Texto = "Label con auto-update", Flag = "v_lblAuto", Valor = "–",
+    Cada = 0.5, Actualizar = function() return string.format("%.1fs desde carga", os.clock()) end,
+    Tooltip = "Actualiza su valor cada 0.5s automáticamente" })
+
+SVis:Label({ Texto = "Label con descripción", Flag = "v_lblDesc", Valor = "ℹ️",
+    Descripcion = "La flecha expande este texto. Útil para explicaciones largas sin ocupar espacio permanente.",
+    Tooltip = "Click en la flecha de la izquierda para expandir" })
+
+local prog = SVis:Progreso({ Texto = "Progreso", Flag = "v_prog", Defecto = 35,
+    Tooltip = "Solo lectura. Set() con 0-100" })
+
+SVis:Imagen({ Url = "rbxassetid://6031094678", Aspecto = "16:9", Radio = 8,
+    Tooltip = "Imagen con Aspecto 16:9: la altura se calcula según el ancho" })
+
+-- Botones para mover el Label simple y el Progreso
+local SBotVar = TabCtrl:CrearSeccion("Variar valores")
+SBotVar:Boton({ Texto = "Cambiar Label simple", Callback = function()
+    local valores = { "estado óptimo", "cargando...", "error de red", "listo ✅" }
+    local v = valores[math.random(1, #valores)]
+    lblSimple:Set(v)
+    lblSimple:SetColor(v:find("error") and Color3.fromRGB(231,76,60) or Color3.fromRGB(46,204,113))
+end })
+
+SBotVar:Boton({ Texto = "Avanzar Progreso +10%", Callback = function()
+    local actual = AlanUI:ObtenerFlag("v_prog") or 0
+    local nuevo = (actual + 10) % 110
+    prog:Set(nuevo > 100 and 0 or nuevo)
+end })
+
+-- ══════════════════════════════════════════════════════════════
+--  TAB 2 — VENTANA Y LAYOUT
+-- ══════════════════════════════════════════════════════════════
+local TabVent = V:CrearTab("Ventana", "🪟")
+
+-- ── Contenedores ───────────────────────────────────────────────
+local SCont = TabVent:CrearSeccion("Contenedores de layout")
+SCont:Parrafo({ Titulo = "Parrafo / Divider / Grupo", Contenido = "Elementos que agrupan o separan sin ser controles: texto informativo, líneas divisorias, botones en fila." })
+
+SCont:Divider({ Texto = "Divider con texto" })
+SCont:Parrafo({
+    Titulo = "Parrafo simple",
+    Contenido = "Solo título y contenido, sin extras.",
+})
+
+SCont:Parrafo({
+    Titulo = "Parrafo avanzado",
+    Contenido = "Con imagen, miniatura y botones abajo.",
+    ImagenUrl = "rbxassetid://6031094678", ImagenAlto = 90,
+    MiniaturaUrl = "rbxassetid://6031094678",
+    Botones = {
+        { Texto = "Copiar", Variante = "primary", Callback = function() AlanUI:Notificar({ Titulo = "Copiar", Texto = "Pulsado", Duracion = 1.5 }) end },
+        { Texto = "Cerrar", Callback = function() AlanUI:Notificar({ Titulo = "Cerrar", Texto = "Pulsado", Duracion = 1.5 }) end },
+    },
+})
+
+SCont:Divider({ Texto = "Grupo de botones (fila horizontal)" })
+local grupo = SCont:Grupo()
+grupo:Boton({ Texto = "Guardar", Callback = function() AlanUI:Notificar({ Titulo = "Guardar", Texto = "Pulsado", Duracion = 1.5 }) end })
+grupo:Boton({ Texto = "Cargar", Callback = function() AlanUI:Notificar({ Titulo = "Cargar", Texto = "Pulsado", Duracion = 1.5 }) end })
+grupo:Boton({ Texto = "Eliminar", Callback = function() AlanUI:Notificar({ Titulo = "Eliminar", Texto = "Pulsado", Tipo = "Warning", Duracion = 1.5 }) end })
+
+SCont:Divider()
+
+-- ── Funciones de la ventana ────────────────────────────────────
+local SFunc = TabVent:CrearSeccion("Funciones en vivo")
+SFunc:Parrafo({ Titulo = "Control de la ventana", Contenido = "Cada botón ejecuta una función pública de la ventana." })
+
+SFunc:Boton({ Texto = "🔍 Buscar 'color'", Tooltip = "Filtra por ese texto y cambia a la primera tab con match",
+    Callback = function() V:Buscar("color") end })
+
+SFunc:Boton({ Texto = "🔍 Limpiar búsqueda", Callback = function() V:Buscar("") end })
+
+SFunc:Boton({ Texto = "📐 Alternar orientación (vertical ↔ horizontal)",
+    Tooltip = "Cambia entre tabs laterales y barra superior",
+    Callback = function()
+        local horizontal = (V._buscadorBoxHoriz and V._buscadorBoxHoriz.Visible)
+        V:CambiarOrientacion(horizontal and "vertical" or "horizontal")
+    end })
+
+SFunc:Boton({ Texto = "🎨 Aplicar tema DemoNeon", Callback = function() V:CambiarTema("DemoNeon") end })
+SFunc:Boton({ Texto = "🎨 Aplicar tema Negro (default)", Callback = function() V:CambiarTema("Negro") end })
+
+SFunc:Boton({ Texto = "➖ Minimizar (3s)", Callback = function()
+    V:Minimizar()
+    task.delay(3, function() V:Mostrar() end)
+end })
+
+SFunc:Boton({ Texto = "🔄 Resetear todos los controles a Defecto",
+    Tooltip = "Vuelve los controles a su valor inicial (no toca la Preinstalada)",
+    Callback = function() V:Resetear() end })
+
+SFunc:Boton({ Texto = "🏷️ Agregar tag al header", Callback = function()
+    local colores = { "info", "success", "warning", "danger", "neutral" }
+    V:AgregarTag({ Texto = "TAG " .. math.random(1, 99), Color = colores[math.random(1, #colores)] })
+end })
+
+SFunc:Boton({ Texto = "🌈 Agregar tag rainbow", Callback = function()
+    local t = V:AgregarTag({ Texto = "RAINBOW", Color = "rainbow", Icono = "🌈" })
+    task.delay(5, function() t.Remover() end)
+end })
+
+-- ── Construir desde schema ─────────────────────────────────────
+local SSchema = TabVent:CrearSeccion("Construir desde schema")
+SSchema:Parrafo({ Titulo = "ConstruirDesdeSchema", Contenido = "Crea una pestaña entera con secciones y controles desde una sola tabla." })
+
+SSchema:Boton({ Texto = "🧬 Crear pestaña entera desde schema",
+    Tooltip = "Crea una tab nueva con 2 secciones y varios controles preconfigurados",
+    Callback = function()
+        local creados = V:ConstruirDesdeSchema({
+            Tabs = {{
+                Nombre = "Generada", Icono = "🧬",
+                Secciones = {
+                    {
+                        Nombre = "Creada dinámicamente",
+                        Controles = {
+                            { Control = "Toggle", Texto = "Auto Mode", Flag = "sch_auto", Defecto = false },
+                            { Control = "Slider", Texto = "Velocidad", Flag = "sch_vel", Min = 0, Max = 100, Defecto = 30 },
+                            { Control = "Boton", Texto = "Aplicar", Callback = function()
+                                AlanUI:Notificar({ Titulo = "Schema", Texto = "Botón de schema pulsado", Duracion = 2 })
+                            end },
+                        },
+                    },
+                    {
+                        Nombre = "Colapsada por defecto",
+                        ColapsadaPorDefecto = true,
+                        Controles = {
+                            { Control = "Input", Texto = "API Key", Flag = "sch_api", Defecto = "" },
+                        },
+                    },
+                },
+            }},
+        })
+        AlanUI:Notificar({
+            Titulo = "🧬 Schema construido",
+            Texto = "Pestaña 'Generada' agregada. Slider guardado en sch_vel",
+            Duracion = 4,
+        })
+    end })
+
+-- ── Divisores dinámicos ────────────────────────────────────────
+local SDiv = TabVent:CrearSeccion("Divisores")
+SDiv:Parrafo({ Titulo = "Divisores", Contenido = "Divisor dentro de la página (entre secciones) y divisor en la barra lateral (entre tabs)." })
+
+SDiv:Boton({ Texto = "📏 Crear Divisor de tab aquí", Tooltip = "Añade un separador visual entre esta sección y la próxima",
+    Callback = function() TabVent:CrearDivisor({ Texto = "Fin de funciones en vivo" }) end })
+
+SDiv:Boton({ Texto = "📐 Crear Divisor de sidebar", Tooltip = "Añade una línea entre las tabs laterales",
+    Callback = function() V:AgregarDivisorSidebar({ Texto = "Extras" }) end })
+
+-- ── Destruir ───────────────────────────────────────────────────
+local SDest = TabVent:CrearSeccion("Destruir")
+SDest:Parrafo({ Titulo = "Ventana:Destruir()", Contenido = "Cierra la interfaz y limpia todas las conexiones. Pide confirmación antes de ejecutar." })
+
+SDest:Boton({ Texto = "💀 Destruir la ventana",
+    Tooltip = "Equivalente al botón ✕ de la barra superior",
+    Callback = function()
+        AlanUI:Confirmar({
+            Titulo = "¿Cerrar la vitrina?",
+            Contenido = "Todos los controles se perderán.",
+            Icono = "⚠️",
+            BotonAceptar = { Texto = "Cerrar", Variante = "danger", Callback = function() V:Destruir() end },
+            BotonCancelar = { Texto = "Cancelar" },
+        })
+    end })
+
+-- ══════════════════════════════════════════════════════════════
+--  TAB 3 — ALERTAS
+-- ══════════════════════════════════════════════════════════════
+local TabAlert = V:CrearTab("Alertas", "🔔")
+
+-- ── Notificaciones ─────────────────────────────────────────────
+local SNot = TabAlert:CrearSeccion("Notificaciones")
+SNot:Parrafo({ Titulo = "Notificar", Contenido = "Tipos: Info (acento del tema), Success, Warning, Error. Persistente no se autocierra. Prioridad salta la cola." })
+
+SNot:Boton({ Texto = "ℹ️ Notificación Info", Callback = function()
+    AlanUI:Notificar({ Titulo = "Info", Texto = "Mensaje informativo genérico", Tipo = "Info", Duracion = 3 })
+end })
+
+SNot:Boton({ Texto = "✅ Notificación Success", Callback = function()
+    AlanUI:Notificar({ Titulo = "Éxito", Texto = "Operación completada", Tipo = "Success", Duracion = 3 })
+end })
+
+SNot:Boton({ Texto = "⚠️ Notificación Warning", Callback = function()
+    AlanUI:Notificar({ Titulo = "Atención", Texto = "Esto puede ser lento", Tipo = "Warning", Duracion = 3 })
+end })
+
+SNot:Boton({ Texto = "❌ Notificación Error", Callback = function()
+    AlanUI:Notificar({ Titulo = "Error", Texto = "Algo salió mal en la operación", Tipo = "Error", Duracion = 3 })
+end })
+
+SNot:Boton({ Texto = "📌 Notificación Persistente", Tooltip = "No se autocierra. Click para descartarla",
+    Callback = function()
+        AlanUI:Notificar({ Titulo = "Requiere acción", Texto = "Click en la tarjeta para descartar", Tipo = "Warning", Persistente = true })
+    end })
+
+SNot:Boton({ Texto = "🔴 8 notificaciones (prueba de cola)", Tooltip = "Las últimas 4 se encolan",
+    Callback = function()
+        for i = 1, 8 do
+            AlanUI:Notificar({ Titulo = "Notif " .. i, Texto = "Mensaje " .. i, Duracion = 1.5 })
+        end
+    end })
+
+SNot:Boton({ Texto = "🚨 Prioridad alta (salta la cola)", Tooltip = "Con la cola llena, salta adelante",
+    Callback = function()
+        for i = 1, 6 do AlanUI:Notificar({ Titulo = "Baja " .. i, Texto = "prioridad 0", Duracion = 2 }) end
+        AlanUI:Notificar({ Titulo = "⚡ CRÍTICA", Texto = "Prioridad 5 — salta adelante", Tipo = "Error", Prioridad = 5, Duracion = 4 })
+    end })
+
+-- ── Modal Confirmar ────────────────────────────────────────────
+local SMod = TabAlert:CrearSeccion("Modal Confirmar")
+SMod:Parrafo({ Titulo = "Confirmar", Contenido = "Modal con botones personalizables. Variantes: primary (acento), danger (rojo), tertiary (borde), neutral (por defecto)." })
+
+SMod:Boton({ Texto = "Modal simple (Aceptar / Cancelar)",
+    Callback = function()
+        AlanUI:Confirmar({
+            Titulo = "¿Continuar?",
+            Contenido = "Esta es la forma simple con dos botones por defecto.",
+            BotonAceptar = { Texto = "Continuar", Callback = function()
+                AlanUI:Notificar({ Titulo = "Confirmado", Texto = "Se pulsó Continuar", Tipo = "Success", Duracion = 2 })
+            end },
+            BotonCancelar = { Texto = "Cancelar" },
+        })
+    end })
+
+SMod:Boton({ Texto = "Modal con icono y 3 botones (variantes)",
+    Callback = function()
+        AlanUI:Confirmar({
+            Icono = "⚠️",
+            Titulo = "¿Eliminar el perfil?",
+            Contenido = "Cada botón usa una variante distinta para comparar estilos.",
+            Botones = {
+                { Texto = "Eliminar", Variante = "danger",  Callback = function() AlanUI:Notificar({ Titulo = "danger", Texto = "Botón rojo pulsado", Tipo = "Error", Duracion = 2 }) end },
+                { Texto = "Guardar",  Variante = "primary", Callback = function() AlanUI:Notificar({ Titulo = "primary", Texto = "Botón acento pulsado", Duracion = 2 }) end },
+                { Texto = "Cancelar", Variante = "tertiary", Callback = function() AlanUI:Notificar({ Titulo = "tertiary", Texto = "Botón con borde pulsado", Duracion = 2 }) end },
+            },
+        })
+    end })
+
+SMod:Boton({ Texto = "Modal apilado (dos encima)",
+    Callback = function()
+        AlanUI:Confirmar({
+            Titulo = "Primer modal",
+            Contenido = "Pulsá Siguiente para abrir otro encima.",
+            BotonAceptar = { Texto = "Siguiente", Callback = function()
+                AlanUI:Confirmar({ Titulo = "Segundo modal", Contenido = "Este quedó encima del primero." })
+            end },
+            BotonCancelar = { Texto = "Cerrar" },
+        })
+    end })
+
+-- ── Tags ───────────────────────────────────────────────────────
+local STag = TabAlert:CrearSeccion("Tags del header")
+STag:Parrafo({ Titulo = "AgregarTag", Contenido = "Pastillas junto al título. Colores predefinidos: info, success, warning, danger, neutral. También acepta Color3 o tabla de Color3." })
+
+local tagsGuardados = {}
+STag:Boton({ Texto = "➕ Agregar tag de cada color", Callback = function()
+    for _, c in ipairs({ "info", "success", "warning", "danger", "neutral" }) do
+        table.insert(tagsGuardados, V:AgregarTag({ Texto = c:upper(), Color = c }))
+    end
+end })
+
+STag:Boton({ Texto = "🎨 Tag con Color3 custom", Callback = function()
+    table.insert(tagsGuardados, V:AgregarTag({ Texto = "CUSTOM", Color = Color3.fromRGB(120, 80, 200) }))
+end })
+
+STag:Boton({ Texto = "🌈 Tag rainbow animado", Callback = function()
+    table.insert(tagsGuardados, V:AgregarTag({ Texto = "RAINBOW", Color = "rainbow", Icono = "🌈" }))
+end })
+
+STag:Boton({ Texto = "🗑️ Quitar el último tag", Callback = function()
+    local t = table.remove(tagsGuardados)
+    if t then t.Remover() end
+end })
+
+-- ══════════════════════════════════════════════════════════════
+--  TAB 4 — ESTADOS
+-- ══════════════════════════════════════════════════════════════
+local TabEst = V:CrearTab("Estados", "🔒")
+
+-- ── Lock / Unlock ──────────────────────────────────────────────
+local SLock = TabEst:CrearSeccion("Lock (bloqueo)")
+SLock:Parrafo({ Titulo = "Lock / Unlock", Contenido = "El control queda cubierto por una capa con motivo visible. Set() sigue funcionando desde código." })
+
+local controlesLockeables = {}
+for _, par in ipairs({
+    { "Boton",  { Texto = "Botón bloqueado", Callback = function() end } },
+    { "Toggle", { Texto = "Toggle bloqueado", Flag = "lk_tog" } },
+    { "Slider", { Texto = "Slider bloqueado", Flag = "lk_sl", Min = 0, Max = 100, Defecto = 50 } },
+    { "Input",  { Texto = "Input bloqueado", Flag = "lk_in" } },
+    { "Dropdown", { Texto = "Dropdown bloqueado", Flag = "lk_dd", Opciones = { "A", "B", "C" }, Defecto = "A" } },
+}) do
+    local nombre, cfg = par[1], par[2]
+    cfg.Locked = true
+    cfg.LockedTitle = "Requiere AutoFarm"
+    controlesLockeables[nombre] = SLock[nombre](SLock, cfg)
+end
+
+SLock:Boton({ Texto = "🔓 Desbloquear todos", Callback = function()
+    for _, c in pairs(controlesLockeables) do c:Unlock() end
+end })
+
+SLock:Boton({ Texto = "🔒 Volver a bloquear con otro motivo", Callback = function()
+    for _, c in pairs(controlesLockeables) do c:Lock("Solo para premium") end
+end })
+
+-- ── Highlight ──────────────────────────────────────────────────
+local SHL = TabEst:CrearSeccion("Highlight (resaltado)")
+SHL:Parrafo({ Titulo = "Highlight", Contenido = "Borde pulsante temporal alrededor del control para llamar la atención." })
+
+local sliderResaltable = SHL:Slider({ Texto = "Slider resaltable", Flag = "hl_sl", Min = 0, Max = 100, Defecto = 40 })
+
+SHL:Boton({ Texto = "✨ Resaltar 2 segundos", Callback = function() sliderResaltable:Highlight(2) end })
+SHL:Boton({ Texto = "✨ Resaltar 5 segundos", Callback = function() sliderResaltable:Highlight({ Duracion = 5 }) end })
+
+-- ── VisibleSi ──────────────────────────────────────────────────
+local SVis2 = TabEst:CrearSeccion("VisibleSi (visibilidad condicional)")
+SVis2:Parrafo({ Titulo = "VisibleSi", Contenido = "El control se muestra/oculta según el valor de otro flag. Acá: los 3 siguientes se ocultan si 'Modo avanzado' está apagado." })
+
+SVis2:Toggle({ Texto = "Modo avanzado", Flag = "vis_master", Defecto = true,
+    Tooltip = "Prendé/apagá para ver los controles de abajo aparecer/desaparecer" })
+
+SVis2:Slider({ Texto = "Precisión (avanzado)", Flag = "vis_prec", Min = 1, Max = 10, Defecto = 5,
+    VisibleSi = function() return AlanUI.Flags["vis_master"] == true end })
+
+SVis2:Dropdown({ Texto = "Prioridad (avanzado)", Flag = "vis_prio",
+    Opciones = { "Baja", "Media", "Alta" }, Defecto = "Media",
+    VisibleSi = function() return AlanUI.Flags["vis_master"] == true end })
+
+SVis2:Input({ Texto = "Filtro (avanzado)", Flag = "vis_filtro", Placeholder = "…",
+    VisibleSi = function() return AlanUI.Flags["vis_master"] == true end })
+
+-- ══════════════════════════════════════════════════════════════
+--  TAB 5 — APIs Y DIAGNÓSTICO
+-- ══════════════════════════════════════════════════════════════
+local TabAPI = V:CrearTab("APIs", "⚙️")
+
+-- ── Historial ──────────────────────────────────────────────────
+local SHist = TabAPI:CrearSeccion("Historial (Deshacer / Rehacer)")
+SHist:Parrafo({ Titulo = "Historial", Contenido = "Registra los cambios de controles (no de la Preinstalada). Slider contiguos = 1 sola entrada." })
+
+local lblHist = SHist:Label({ Texto = "Estado", Flag = "api_histEstado", Valor = "—" })
+local grupoHist = SHist:Grupo()
+grupoHist:Boton({ Texto = "↩️ Deshacer", Callback = function()
+    local ok, entrada = AlanUI:Deshacer()
+    AlanUI:Notificar({
+        Titulo = ok and "↩️ Deshecho" or "Nada",
+        Texto = ok and AlanUI:DescribirCambio(entrada) or "Nada que deshacer",
+        Duracion = 2,
+    })
+end })
+grupoHist:Boton({ Texto = "↪️ Rehacer", Callback = function()
+    local ok, entrada = AlanUI:Rehacer()
+    AlanUI:Notificar({
+        Titulo = ok and "↪️ Rehecho" or "Nada",
+        Texto = ok and AlanUI:DescribirCambio(entrada) or "Nada que rehacer",
+        Duracion = 2,
+    })
+end })
+SHist:Boton({ Texto = "🧹 Limpiar historial", Callback = function() AlanUI:LimpiarHistorial() end })
+
+AlanUI.Eventos.HistorialCambiado:Connect(function(nD, nR)
+    pcall(function() lblHist:Set(nD .. " deshacer · " .. nR .. " rehacer") end)
+end)
+
+-- ── Perfiles ───────────────────────────────────────────────────
+local SPerf = TabAPI:CrearSeccion("Perfiles de script")
+SPerf:Parrafo({ Titulo = "SaveManager", Contenido = "Guarda/carga el estado de los controles (excepto la Preinstalada). Usa el prefijo 'v_' en los nombres de perfil demo." })
+
+local perfilActual = "v_demo_1"
+
+SPerf:Boton({ Texto = "💾 Guardar perfil actual (v_demo_1)", Callback = function()
+    local ok = AlanUI.SaveManager:Guardar(perfilActual)
+    AlanUI:Notificar({ Titulo = "Guardar", Texto = ok and ("Perfil " .. perfilActual .. " guardado") or "Falló", Duracion = 2 })
+end })
+
+SPerf:Boton({ Texto = "📂 Cargar perfil (v_demo_1)", Callback = function()
+    AlanUI.SaveManager:Cargar(perfilActual)
+end })
+
+SPerf:Boton({ Texto = "🔀 Cambiar perfil activo (v_demo_2)", Tooltip = "Guarda el actual y carga/crea otro",
+    Callback = function()
+        AlanUI.SaveManager:CambiarPerfil(V, "v_demo_2")
+        perfilActual = "v_demo_2"
+    end })
+
+SPerf:Boton({ Texto = "📋 Listar perfiles guardados", Callback = function()
+    local lista = AlanUI.SaveManager:Listar()
+    print("[VITRINA] Perfiles: " .. table.concat(lista, ", "))
+    AlanUI:Notificar({ Titulo = "Listar", Texto = #lista .. " perfiles (ver consola)", Duracion = 3 })
+end })
+
+SPerf:Boton({ Texto = "📑 Duplicar v_demo_1 → v_demo_copia", Callback = function()
+    local ok, err = AlanUI.SaveManager:Duplicar("v_demo_1", "v_demo_copia")
+    AlanUI:Notificar({ Titulo = ok and "📑 Duplicado" or "Falló", Texto = ok and "v_demo_copia" or tostring(err), Duracion = 2 })
+end })
+
+SPerf:Boton({ Texto = "✏️ Renombrar v_demo_copia → v_demo_renombrado", Callback = function()
+    local ok, err = AlanUI.SaveManager:Renombrar("v_demo_copia", "v_demo_renombrado")
+    AlanUI:Notificar({ Titulo = ok and "✏️ Renombrado" or "Falló", Texto = ok and "v_demo_renombrado" or tostring(err), Duracion = 2 })
+end })
+
+SPerf:Boton({ Texto = "📤 Exportar v_demo_1 (copia al portapapeles)", Callback = function()
+    local texto, copiado = AlanUI.SaveManager:Exportar("v_demo_1")
+    if texto then
+        AlanUI:Notificar({ Titulo = "📤 Exportado", Texto = copiado and "Copiado al portapapeles" or "Texto disponible", Duracion = 2 })
+    else
+        AlanUI:Notificar({ Titulo = "Falló", Texto = tostring(copiado), Tipo = "Error", Duracion = 3 })
+    end
+end })
+
+SPerf:Boton({ Texto = "📥 Importar v_demo_1 → v_demo_importado", Callback = function()
+    local texto = AlanUI.SaveManager:Exportar("v_demo_1")
+    if not texto then AlanUI:Notificar({ Titulo = "Sin origen", Duracion = 2 }) return end
+    local ok, err = AlanUI.SaveManager:Importar("v_demo_importado", texto)
+    AlanUI:Notificar({ Titulo = ok and "📥 Importado" or "Falló", Texto = ok and "v_demo_importado" or tostring(err), Duracion = 2 })
+end })
+
+SPerf:Boton({ Texto = "🗑️ Limpiar todos los perfiles demo", Tooltip = "Borra v_demo_* del disco",
+    Callback = function()
+        local nombres = { "v_demo_1", "v_demo_2", "v_demo_copia", "v_demo_renombrado", "v_demo_importado" }
+        for _, n in ipairs(nombres) do pcall(function() AlanUI.SaveManager:Eliminar(n) end) end
+        AlanUI:Notificar({ Titulo = "Limpieza", Texto = "Perfiles demo eliminados", Duracion = 2 })
+    end })
+
+-- ── Lectura de flags ───────────────────────────────────────────
+local SRead = TabAPI:CrearSeccion("Lectura de flags")
+SRead:Parrafo({ Titulo = "ObtenerFlag / Try / ObtenerElemento", Contenido = "Tres formas de leer el valor de un control desde código." })
+
+local lblLectura = SRead:Label({ Texto = "Resultado", Flag = "api_lecturaResultado", Valor = "—" })
+
+SRead:Boton({ Texto = "📖 ObtenerFlag('v_slider')", Callback = function()
+    local v = AlanUI:ObtenerFlag("v_slider")
+    lblLectura:Set("ObtenerFlag v_slider = " .. tostring(v))
+end })
+
+SRead:Boton({ Texto = "📖 Try('no_existe', 999)", Callback = function()
+    local v = AlanUI:Try("no_existe", 999)
+    lblLectura:Set("Try no_existe = " .. tostring(v) .. " (fallback)")
+end })
+
+SRead:Boton({ Texto = "🔍 ObtenerElemento('v_slider').Get()", Callback = function()
+    local elem = AlanUI:ObtenerElemento("v_slider")
+    if elem then
+        lblLectura:Set("Elemento.Get() = " .. tostring(elem.Get()))
+    else
+        lblLectura:Set("Elemento no encontrado")
+    end
+end })
+
+SRead:Boton({ Texto = "✏️ AlanUI:ActualizarLabel('v_lbl', texto)", Callback = function()
+    local nuevo = "actualizado " .. os.date("%H:%M:%S")
+    AlanUI:ActualizarLabel("v_lbl", nuevo)
+    lblLectura:Set("Label v_lbl → " .. nuevo)
+end })
+
+-- ── Diagnóstico ────────────────────────────────────────────────
+local SDiag = TabAPI:CrearSeccion("Diagnóstico")
+SDiag:Parrafo({ Titulo = "Diagnóstico", Contenido = "Herramientas para reportar bugs: Profiler, DiagnosticoCompleto, VerificarSoporte, ForzarTipo." })
+
+SDiag:Boton({ Texto = "🩺 Profiler (una línea en consola)", Callback = function()
+    AlanUI:Profiler()
+end })
+
+SDiag:Boton({ Texto = "🩺 DiagnosticoCompleto (dump a consola)", Callback = function()
+    local d = AlanUI:DiagnosticoCompleto()
+    print(string.format("[VITRINA] Entorno: %s · %s · Ejecutor: %s",
+        d.Tipo, d.Plataforma, d.Ejecutor))
+    print(string.format("[VITRINA] Features: %d/%d soportadas",
+        d.FeaturesOk, d.FeaturesTotal))
+    for _, adv in ipairs(d.Advertencias) do
+        print(string.format("[VITRINA]   [%s] %s: %s", adv.nivel, adv.nombre, adv.mensaje))
+    end
+end })
+
+SDiag:Boton({ Texto = "✅ Verificar soporte de 'Drawing'", Callback = function()
+    local r = AlanUI:VerificarSoporte("Drawing")
+    AlanUI:Notificar({
+        Titulo = r.ok and "Drawing: soportado" or "Drawing: no soportado",
+        Texto = r.ok and "Podés usar Drawing.new()" or tostring(r.mensaje),
+        Tipo = r.ok and "Success" or "Warning",
+        Duracion = 3,
+    })
+end })
+
+SDiag:Boton({ Texto = "🖥️ Forzar tipo = Tablet", Callback = function()
+    AlanUI:ForzarTipo("Tablet")
+    AlanUI:Notificar({ Titulo = "🖥️ Tipo forzado", Texto = "Ahora se comporta como Tablet", Duracion = 2 })
+end })
+
+SDiag:Boton({ Texto = "🖥️ Liberar tipo forzado (auto)", Callback = function()
+    AlanUI:LiberarForzado()
+    AlanUI:Notificar({ Titulo = "🖥️ Tipo auto", Texto = "Vuelve a detectar solo", Duracion = 2 })
+end })
+
+-- ── CrearVentanaConSeguridad ───────────────────────────────────
+local SSeg = TabAPI:CrearSeccion("CrearVentanaConSeguridad")
+SSeg:Parrafo({
+    Titulo = "Detección de otro script",
+    Contenido = "Simula que otro script que usa AlanUI se ejecuta mientras esta ventana está abierta. Aparece un modal preguntando si querés reemplazarla.",
+})
+
+SSeg:Boton({ Texto = "🛡️ Simular segundo script",
+    Tooltip = "Aparece el modal de detección. Si decís 'Sí', esta ventana se cierra y se abre la nueva",
+    Callback = function()
+        task.spawn(function()
+            local ok, resultado = pcall(function()
+                return AlanUI:CrearVentanaConSeguridad({
+                    Titulo = "Segundo Script",
+                    Subtitulo = "Prueba de detección",
+                    TamanoX = 420,
+                    TamanoY = 200,
+                    AutoGuardar = false,
+                })
+            end)
+
+            if not ok then
+                AlanUI:Notificar({ Titulo = "Error", Texto = tostring(resultado), Tipo = "Error", Duracion = 4 })
+                return
+            end
+
+            if resultado == nil then
+                -- El usuario eligió "No": la vitrina sigue viva.
+                print("[VITRINA] Usuario eligió NO reemplazar. Ventana original preservada.")
+                return
+            end
+
+            -- El usuario eligió "Sí": la vitrina fue destruida.
+            -- Poblamos la nueva ventana con info.
+            local tab = resultado:CrearTab("Info", "ℹ️")
+            local sec = tab:CrearSeccion("Segundo script activo")
+            sec:Parrafo({
+                Titulo = "Ventana reemplazada",
+                Contenido = "Este es el segundo script corriendo.\nLa vitrina original fue destruida.",
+            })
+            sec:Boton({ Texto = "Cerrar segundo script", Callback = function()
+                resultado:Destruir()
+            end })
+        end)
+    end })
+
+-- ══════════════════════════════════════════════════════════════
+--  Estado inicial
+-- ══════════════════════════════════════════════════════════════
+task.delay(1.2, function()
+    AlanUI:Notificar({
+        Titulo = "🎛️ Vitrina cargada",
+        Texto = "5 pestañas: Controles, Ventana, Alertas, Estados, APIs",
+        Tipo = "Success",
+        Duracion = 6,
+    })
+end)               string.format("Get=%s espada=%s desc=%s hacha=%s arco=%s", tostring(elemento("tDropAv").Get()),
+                    tostring(espada ~= nil), tostring(desc ~= nil), tostring(hacha ~= nil), tostring(arco ~= nil))
+        end)
+
+        prueba("Dropdown avanzado: opcion Locked muestra el motivo y Divider crea la linea", function()
+            local fila = controlesLote3.dropdown.Fila
+            local lanza = buscarTexto(fila, "🔱 Lanza")
+            local motivo = buscarTexto(fila, "🔒 Bloqueada por nivel")
+            local linea = false
+            if lanza then
+                for _, h in ipairs(lanza.Parent:GetChildren()) do
+                    if h:IsA("Frame") and h.Size.Y.Offset == 1 then linea = true end
+                end
+            end
+            return lanza ~= nil and motivo ~= nil and linea,
+                string.format("lanza=%s motivo=%s linea divisoria=%s", tostring(lanza ~= nil), tostring(motivo ~= nil), tostring(linea))
+        end)
+
+        prueba("Dropdown avanzado: Agregar/Eliminar conservan las opciones con detalle", function()
+            local dd = controlesLote3.dropdown
+            local a = dd.AgregarOpcion("Maza") == true
+            task.wait(0.1)
+            local conserva = buscarTexto(dd.Fila, "⚔️ Espada") ~= nil and buscarTexto(dd.Fila, "🔒 Bloqueada por nivel") ~= nil
+            local nueva = buscarTexto(dd.Fila, "Maza") ~= nil
+            local e = dd.EliminarOpcion("Hacha") == true
+            task.wait(0.1)
+            local sinHacha = buscarTexto(dd.Fila, "🪓 Hacha") == nil
+            local sigue = buscarTexto(dd.Fila, "⚔️ Espada") ~= nil
+            return a and conserva and nueva and e and sinHacha and sigue,
+                string.format("agregar=%s conserva=%s nueva=%s eliminar=%s sinHacha=%s sigue=%s",
+                    tostring(a), tostring(conserva), tostring(nueva), tostring(e), tostring(sinHacha), tostring(sigue))
+        end)
+
+        prueba("Dropdown avanzado: lista de solo texto sigue funcionando", function()
+            local dd = controlesLote3.dropdown
+            dd.ActualizarOpciones({ "Uno", "Dos", "Tres" })
+            task.wait(0.1)
+            elemento("tDropAv").Set("Dos", false)
+            local ok = elemento("tDropAv").Get() == "Dos" and buscarTexto(dd.Fila, "Dos") ~= nil
+                and buscarTexto(dd.Fila, "⚔️ Espada") == nil
+            dd.ActualizarOpciones({
+                { Titulo = "Espada", Icono = "⚔️", Descripcion = "Rápida, poco daño" },
+                { Titulo = "Hacha", Icono = "🪓" },
+                { Tipo = "Divider" },
+                { Titulo = "Lanza", Icono = "🔱", Locked = true, LockedTitle = "Bloqueada por nivel" },
+                "Arco",
+            })
+            elemento("tDropAv").Set("Espada", false)
+            return ok, "Get final=" .. tostring(elemento("tDropAv").Get())
+        end)
+
+        prueba("Descripcion expandible: Label empieza cerrado", function()
+            local panelTexto = buscarTexto(TabFixes.Pagina, controlesLote3.textoDescripcion)
+            local panel = panelTexto and panelTexto.Parent
+            return panel ~= nil and panel.Visible == false, "panel visible=" .. tostring(panel and panel.Visible)
+        end)
+
+        prueba("Descripcion expandible: Parrafo muestra el enlace y oculta el detalle", function()
+            local enlace = buscarTexto(TabFixes.Pagina, "+ Más información")
+            local extra = buscarTexto(TabFixes.Pagina, "Detalle extra que solo aparece al pulsar Más información.")
+            return enlace ~= nil and extra ~= nil and extra.Visible == false,
+                string.format("enlace=%s detalle oculto=%s", tostring(enlace ~= nil), tostring(extra and not extra.Visible))
+        end)
+
+        prueba("Tags en el header: comparten contenedor y respetan el color", function()
+            local t1, t2, t3 = controlesLote3.tag1, controlesLote3.tag2, controlesLote3.tag3
+            return t1.Instancia.Parent == t2.Instancia.Parent and t2.Instancia.Parent == t3.Instancia.Parent
+                and t1.Instancia.BackgroundColor3 == Color3.fromRGB(215, 160, 50)
+                and t2.Instancia.BackgroundColor3 == Color3.fromRGB(120, 80, 200),
+                "tags=" .. #t1.Instancia.Parent:GetChildren() - 1
+        end)
+
+        prueba("Tags rainbow: tiene degradado y gira", function()
+            local t = controlesLote3.tagRainbow
+            local g = t.Instancia:FindFirstChildOfClass("UIGradient")
+            if not g then return false, "sin UIGradient" end
+            local r1 = g.Rotation
+            task.wait(0.6)
+            local r2 = g.Rotation
+            local lbl = t.Instancia:FindFirstChildOfClass("TextLabel")
+            return #g.Color.Keypoints == 7 and r1 ~= r2 and lbl.Text == "🌈 RAINBOW",
+                string.format("puntos=%d rotacion %.1f -> %.1f texto=%s", #g.Color.Keypoints, r1, r2, lbl.Text)
+        end)
+
+        prueba("Tags rainbow con Animar=false no gira", function()
+            local temporal = Ventana:AgregarTag({ Texto = "QUIETO", Color = "rainbow", Animar = false })
+            local g = temporal.Instancia:FindFirstChildOfClass("UIGradient")
+            if not g then temporal.Remover() return false, "sin UIGradient" end
+            local r1 = g.Rotation
+            task.wait(0.4)
+            local r2 = g.Rotation
+            temporal.Remover()
+            return r2 == r1, string.format("rotacion %.1f -> %.1f", r1, r2)
+        end)
+
+        prueba("Tags con degradado de dos colores", function()
+            local temporal = Ventana:AgregarTag({
+                Texto = "DEGRADADO", Color = { Color3.fromRGB(255, 90, 120), Color3.fromRGB(90, 120, 255) },
+            })
+            local g = temporal.Instancia:FindFirstChildOfClass("UIGradient")
+            local ok = g ~= nil and #g.Color.Keypoints == 2 and g.Color.Keypoints[1].Value == Color3.fromRGB(255, 90, 120)
+            local puntos = g and #g.Color.Keypoints
+            temporal.Remover()
+            return ok, "puntos=" .. tostring(puntos)
+        end)
+
+        prueba("Tags con Callback crean un boton encima", function()
+            local temporal = Ventana:AgregarTag({ Texto = "TOCAME", Color = "success", Callback = function() end })
+            local conBoton = temporal.Instancia:FindFirstChildWhichIsA("GuiButton", true) ~= nil
+            temporal.Remover()
+            return conBoton, "tiene boton=" .. tostring(conBoton)
+        end)
+
+        prueba("Tags: SetColor quita el degradado y Remover elimina el tag", function()
+            local t = Ventana:AgregarTag({ Texto = "TEMP", Color = "rainbow" })
+            t.SetColor("danger")
+            local sinGradiente = t.Instancia:FindFirstChildOfClass("UIGradient") == nil
+            local colorOk = t.Instancia.BackgroundColor3 == Color3.fromRGB(190, 60, 60)
+            t:SetColor({ Color3.fromRGB(10, 20, 30), Color3.fromRGB(200, 210, 220) })
+            local conGradiente = t.Instancia:FindFirstChildOfClass("UIGradient") ~= nil
+            t.Remover()
+            task.wait(0.1)
+            return sinGradiente and colorOk and conGradiente and t.Instancia.Parent == nil,
+                string.format("sinGradiente=%s color=%s conGradiente=%s removido=%s", tostring(sinGradiente),
+                    tostring(colorOk), tostring(conGradiente), tostring(t.Instancia.Parent == nil))
+        end)
+
+        prueba("Tags: los que no caben se ocultan completos, sin quedar cortados", function()
+            local temporales = {}
+            for i = 1, 8 do
+                table.insert(temporales, Ventana:AgregarTag({ Texto = "TEMP " .. i, Color = "neutral" }))
+            end
+            task.wait(0.5)
+            local contenedor = temporales[1].Instancia.Parent
+            local izquierda = contenedor.AbsolutePosition.X
+            local visibles, cortados = 0, 0
+            for _, t in ipairs(contenedor:GetChildren()) do
+                if t:IsA("Frame") and t.Visible then
+                    visibles = visibles + 1
+                    if t.AbsolutePosition.X < izquierda - 1 then cortados = cortados + 1 end
+                end
+            end
+            local total = #contenedor:GetChildren() - 1
+            for _, t in ipairs(temporales) do t.Remover() end
+            task.wait(0.3)
+            return cortados == 0 and visibles >= 3 and visibles < total,
+                string.format("visibles=%d de %d, cortados=%d", visibles, total, cortados)
+        end)
+
+        prueba("Tags: SetTexto cambia el texto", function()
+            local t = controlesLote3.tag3
+            local lbl = t.Instancia:FindFirstChildOfClass("TextLabel")
+            t.SetTexto("PRO")
+            local tras1 = lbl.Text
+            t:SetTexto("TEST")
+            return tras1 == "PRO" and lbl.Text == "TEST", "tras1=" .. tostring(tras1) .. " final=" .. tostring(lbl.Text)
+        end)
+
+        if not controlesLote4 then
+            controlesLote4 = {}
+            local sec4 = TabFixes:CrearSeccion("Grupo y Parrafo avanzado (prueba)")
+            controlesLote4.grupo = sec4:Grupo()
+            controlesLote4.btnA = controlesLote4.grupo:Boton({ Texto = "Aplicar", Callback = function() print("[TEST] Grupo: Aplicar") AlanUI:Notificar({ Titulo = "Grupo", Texto = "Aplicar pulsado", Duracion = 2 }) end })
+            controlesLote4.btnB = controlesLote4.grupo:Boton({ Texto = "Cancelar", Callback = function() print("[TEST] Grupo: Cancelar") AlanUI:Notificar({ Titulo = "Grupo", Texto = "Cancelar pulsado", Duracion = 2 }) end })
+            controlesLote4.btnC = controlesLote4.grupo:Boton({ Texto = "Restaurar", Callback = function() print("[TEST] Grupo: Restaurar") AlanUI:Notificar({ Titulo = "Grupo", Texto = "Restaurar pulsado", Duracion = 2 }) end })
+            controlesLote4.grupoEstrecho = sec4:Grupo({ AnchoMinimo = 9999 })
+            controlesLote4.estA = controlesLote4.grupoEstrecho:Boton({ Texto = "Uno (vertical)" })
+            controlesLote4.estB = controlesLote4.grupoEstrecho:Boton({ Texto = "Dos (vertical)" })
+            controlesLote4.parrafo = sec4:Parrafo({
+                Titulo = "Parrafo avanzado", Contenido = "Con imagen, miniatura y botones.",
+                ImagenUrl = "rbxassetid://6031094678", ImagenAlto = 90, ImagenEscala = "Fit",
+                MiniaturaUrl = "rbxassetid://6031094678",
+                Botones = {
+                    { Texto = "Copiar", Variante = "primary", Callback = function() print("[TEST] Parrafo: Copiar") AlanUI:Notificar({ Titulo = "Parrafo", Texto = "Copiar pulsado", Duracion = 2 }) end },
+                    { Texto = "Cerrar", Callback = function() print("[TEST] Parrafo: Cerrar") AlanUI:Notificar({ Titulo = "Parrafo", Texto = "Cerrar pulsado", Duracion = 2 }) end },
+                },
+            })
+        end
+
+        prueba("Grupo: los botones quedan en una fila con el mismo ancho", function()
+            task.wait(0.4)
+            local a, b, c = controlesLote4.btnA.Fila, controlesLote4.btnB.Fila, controlesLote4.btnC.Fila
+            local g = controlesLote4.grupo.Instancia
+            local mismaFila = math.abs(a.AbsolutePosition.Y - b.AbsolutePosition.Y) <= 1 and math.abs(b.AbsolutePosition.Y - c.AbsolutePosition.Y) <= 1
+            local orden = a.AbsolutePosition.X < b.AbsolutePosition.X and b.AbsolutePosition.X < c.AbsolutePosition.X
+            local iguales = math.abs(a.AbsoluteSize.X - b.AbsoluteSize.X) <= 2 and math.abs(b.AbsoluteSize.X - c.AbsoluteSize.X) <= 2
+            return a.Parent == g and b.Parent == g and c.Parent == g and mismaFila and orden and iguales and g.Size.Y.Offset == 32,
+                string.format("misma fila=%s orden=%s anchos %.0f/%.0f/%.0f alto grupo=%d", tostring(mismaFila), tostring(orden),
+                    a.AbsoluteSize.X, b.AbsoluteSize.X, c.AbsoluteSize.X, g.Size.Y.Offset)
+        end)
+
+        prueba("Grupo: pasa a vertical cuando no caben (AnchoMinimo grande)", function()
+            task.wait(0.4)
+            local a, b = controlesLote4.estA.Fila, controlesLote4.estB.Fila
+            local g = controlesLote4.grupoEstrecho.Instancia
+            local debajo = b.AbsolutePosition.Y >= a.AbsolutePosition.Y + a.AbsoluteSize.Y - 1
+            local mismaX = math.abs(a.AbsolutePosition.X - b.AbsolutePosition.X) <= 1
+            return debajo and mismaX and g.Size.Y.Offset == 72,
+                string.format("debajo=%s mismaX=%s alto grupo=%d (esperado 72)", tostring(debajo), tostring(mismaX), g.Size.Y.Offset)
+        end)
+
+        prueba("Grupo: sus botones aceptan Lock", function()
+            local b = controlesLote4.btnA
+            b:Lock("Prueba")
+            local bloqueado = b:IsLocked()
+            b:Unlock()
+            return bloqueado == true and b:IsLocked() == false
+        end)
+
+        prueba("Parrafo avanzado: imagen, miniatura y botones", function()
+            task.wait(0.2)
+            local p = controlesLote4.parrafo
+            local imagenes, altoImagen = 0, nil
+            for _, d in ipairs(p.Instancia:GetDescendants()) do
+                if d:IsA("ImageLabel") then
+                    imagenes = imagenes + 1
+                    if d.Size.Y.Offset == 90 then altoImagen = 90 end
+                end
+            end
+            local copiar = buscarTexto(p.Instancia, "Copiar")
+            local cerrar = buscarTexto(p.Instancia, "Cerrar")
+            return imagenes == 2 and altoImagen == 90 and #p.Botones == 2 and copiar ~= nil and cerrar ~= nil,
+                string.format("imagenes=%d alto imagen=%s botones=%d", imagenes, tostring(altoImagen), #p.Botones)
+        end)
+
+        prueba("Parrafo sin extras no cambia (sin imagenes ni botones)", function()
+            local p = controlesLote3.parrafo
+            local imagenes = 0
+            for _, d in ipairs(p.Instancia:GetDescendants()) do
+                if d:IsA("ImageLabel") then imagenes = imagenes + 1 end
+            end
+            return imagenes == 0 and #p.Botones == 0, "imagenes=" .. imagenes .. " botones=" .. #p.Botones
+        end)
+
+        if not controlesFix then
+            controlesFix = {}
+            local secFix = TabFixes:CrearSeccion("Correcciones de la revision (prueba)")
+            controlesFix.sliderCero = secFix:Slider({ Texto = "Incremento 0", Flag = "tf_cero", Min = 0, Max = 10, Defecto = 5, Incremento = 0 })
+            controlesFix.rangoCero = secFix:RangeSlider({ Texto = "Rango incremento 0", Flag = "tf_rango", Min = 0, Max = 100, Incremento = 0, Defecto = { min = 20, max = 60 } })
+            controlesFix.sliderNoDivide = secFix:Slider({ Texto = "Incremento 3 en 0-10", Flag = "tf_nodiv", Min = 0, Max = 10, Defecto = 3, Incremento = 3 })
+            controlesFix.dropdownDup = secFix:Dropdown({ Texto = "Dropdown duplicado", Flag = "tf_dup", Opciones = { "A", "B", "A" }, Defecto = "A" })
+            controlesFix.divisor = secFix:Divider({ Texto = "Divider con retorno" })
+            controlesFix.divisorSolo = secFix:Divider()
+            controlesFix.tags = secFix:TagInput({ Texto = "TagInput placeholder", Flag = "tf_tags", MaxCaracteres = 10 })
+            controlesFix.inputMax = secFix:Input({ Texto = "Input max 5", Flag = "tf_max", MaxCaracteres = 5 })
+        end
+
+        prueba("Slider con Incremento 0: usa 1 y no colapsa al minimo", function()
+            controlesFix.sliderCero.Set(7)
+            task.wait(0.1)
+            local v = elemento("tf_cero").Get()
+            return v == 7, "Get=" .. tostring(v) .. " (sin la guarda daria 0)"
+        end)
+
+        prueba("RangeSlider con Incremento 0: usa 1 y no colapsa", function()
+            elemento("tf_rango").Set({ min = 30, max = 50 }, true)
+            task.wait(0.1)
+            local v = elemento("tf_rango").Get()
+            return v.min == 30 and v.max == 50, string.format("min=%s max=%s (sin la guarda daria 0)", tostring(v.min), tostring(v.max))
+        end)
+
+        prueba("Slider: avisa si el Incremento no divide el rango", function()
+            local encontrado = false
+            for _, linea in ipairs(lineasWrapper) do
+                if linea:find("no divide el rango", 1, true) and linea:find("el último valor es 9", 1, true) then encontrado = true end
+            end
+            return encontrado, "aviso en el log=" .. tostring(encontrado)
+        end)
+
+        prueba("Slider con Incremento 0: avisa que debe ser mayor a 0", function()
+            local encontrado = false
+            for _, linea in ipairs(lineasWrapper) do
+                if linea:find("debe ser mayor a 0", 1, true) and linea:find("Incremento 0", 1, true) then encontrado = true end
+            end
+            return encontrado, "aviso en el log=" .. tostring(encontrado)
+        end)
+
+        prueba("Dropdown con opciones repetidas: cada opcion una sola vez", function()
+            local cuenta = 0
+            for _, d in ipairs(controlesFix.dropdownDup.Fila:GetDescendants()) do
+                if d:IsA("TextLabel") and d.Text == "A" then cuenta = cuenta + 1 end
+            end
+            return cuenta == 1, "botones A=" .. cuenta
+        end)
+
+        prueba("Divider devuelve una tabla con Instancia", function()
+            local a, b = controlesFix.divisor, controlesFix.divisorSolo
+            return type(a) == "table" and a.Instancia ~= nil and a.Instancia.Parent ~= nil
+                and type(b) == "table" and b.Instancia ~= nil,
+                "con texto=" .. type(a) .. " sin texto=" .. type(b)
+        end)
+
+        prueba("TagInput: el placeholder menciona tocar afuera", function()
+            local caja = controlesFix.tags.Fila:FindFirstChildWhichIsA("TextBox", true)
+            return caja ~= nil and caja.PlaceholderText:find("tocá afuera", 1, true) ~= nil,
+                "placeholder=" .. tostring(caja and caja.PlaceholderText)
+        end)
+
+        prueba("MaxCaracteres: Input y TagInput recortan al limite", function()
+            local cajaInput = controlesFix.inputMax.Fila:FindFirstChildWhichIsA("TextBox", true)
+            cajaInput.Text = "1234567890"
+            local cajaTag = controlesFix.tags.Fila:FindFirstChildWhichIsA("TextBox", true)
+            cajaTag.Text = string.rep("x", 30)
+            task.wait(0.2)
+            return #cajaInput.Text == 5 and #cajaTag.Text == 10,
+                "input=" .. #cajaInput.Text .. " tag=" .. #cajaTag.Text .. " (revisar a mano el destello rojo)"
+        end)
+
+        prueba("Slider: dos Set seguidos terminan en el valor final", function()
+            local c = sliderPrueba
+            c.Set(10)
+            c.Set(90)
+            task.wait(0.6)
+            local caja = c.Fila:FindFirstChildWhichIsA("TextBox", true)
+            return caja ~= nil and caja.Text:find("90", 1, true) ~= nil, "texto=" .. tostring(caja and caja.Text)
+        end)
+
+        prueba("Conexiones de modulo registradas en _G para limpiar al re-ejecutar", function()
+            local lista = _G.AlanUI_ConexionesModulo
+            return type(lista) == "table" and #lista >= 2, "registradas=" .. tostring(type(lista) == "table" and #lista or "ninguna")
+        end)
+
+        if not controlesVisual then
+            controlesVisual = {}
+            local secVis = TabFixes:CrearSeccion("Divider, TagInput y contador (prueba)")
+            controlesVisual.divisor = secVis:Divider({ Texto = "Sección avanzada" })
+            controlesVisual.divisorSolo = secVis:Divider()
+            controlesVisual.tags = secVis:TagInput({
+                Texto = "TagInput con muchos chips", Flag = "tg_muchos",
+                Defecto = { "alfa", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu" },
+            })
+            controlesVisual.contador = secVis:Input({ Texto = "Input max 10", Flag = "tg_cont", MaxCaracteres = 10 })
+        end
+
+        prueba("Divider con texto: barra de acento, texto y linea con degradado", function()
+            local fila = controlesVisual.divisor.Instancia
+            local barra, degradado, texto = false, false, false
+            for _, d in ipairs(fila:GetDescendants()) do
+                if d:IsA("Frame") and d.Size.X.Offset == 3 then barra = true end
+                if d:IsA("UIGradient") then degradado = true end
+                if d:IsA("TextLabel") and d.Text == "Sección avanzada" then texto = true end
+            end
+            return barra and degradado and texto and fila.Size.Y.Offset == 38,
+                string.format("barra=%s degradado=%s texto=%s alto=%d", tostring(barra), tostring(degradado), tostring(texto), fila.Size.Y.Offset)
+        end)
+
+        prueba("Divider sin texto: linea con degradado y alto 18", function()
+            local fila = controlesVisual.divisorSolo.Instancia
+            local degradado = fila:FindFirstChildWhichIsA("UIGradient", true) ~= nil
+            return degradado and fila.Size.Y.Offset == 18, "degradado=" .. tostring(degradado) .. " alto=" .. fila.Size.Y.Offset
+        end)
+
+        local function chipsDe(filaTag)
+            for _, h in ipairs(filaTag:GetChildren()) do
+                if h:IsA("Frame") and h:FindFirstChildOfClass("UIListLayout") then return h end
+            end
+            return nil
+        end
+
+        prueba("TagInput: los chips hacen wrap y la caja queda debajo sin taparlos", function()
+            task.wait(0.5)
+            local fila = controlesVisual.tags.Fila
+            local cc = chipsDe(fila)
+            local caja = fila:FindFirstChildWhichIsA("TextBox")
+            if not (cc and caja) then return false, "no se encontraron chips o caja" end
+            local escala = fila.AbsoluteSize.Y / math.max(fila.Size.Y.Offset, 1)
+            local variasLineas = cc.AbsoluteSize.Y / escala > 30
+            local debajo = caja.AbsolutePosition.Y >= cc.AbsolutePosition.Y + cc.AbsoluteSize.Y - 1
+            local dentro = caja.AbsolutePosition.Y + caja.AbsoluteSize.Y <= fila.AbsolutePosition.Y + fila.AbsoluteSize.Y + 1
+            return variasLineas and debajo and dentro,
+                string.format("varias lineas=%s caja debajo=%s caja dentro de la fila=%s alto fila=%d", tostring(variasLineas), tostring(debajo), tostring(dentro), fila.Size.Y.Offset)
+        end)
+
+        prueba("TagInput: el texto de cada chip queda con margen parejo y espacio para la x", function()
+            local cc = chipsDe(controlesVisual.tags.Fila)
+            local revisados, fallos = 0, 0
+            for _, chip in ipairs(cc:GetChildren()) do
+                if chip:IsA("Frame") then
+                    local lbl = chip:FindFirstChildWhichIsA("TextLabel")
+                    local btn = chip:FindFirstChildWhichIsA("TextButton")
+                    if lbl and btn then
+                        revisados = revisados + 1
+                        local escala = chip.AbsoluteSize.Y / 24
+                        local izquierda = (lbl.AbsolutePosition.X - chip.AbsolutePosition.X) / escala
+                        local libreDerecha = ((chip.AbsolutePosition.X + chip.AbsoluteSize.X) - (lbl.AbsolutePosition.X + lbl.AbsoluteSize.X)) / escala
+                        if math.abs(izquierda - 10) > 1.5 or libreDerecha < 20 or btn.Text ~= "×" then fallos = fallos + 1 end
+                    end
+                end
+            end
+            return revisados == 12 and fallos == 0, string.format("chips revisados=%d con problemas=%d", revisados, fallos)
+        end)
+
+        prueba("TagInput: sin chips la fila vuelve a su alto compacto (66) y con chips crece", function()
+            elemento("tg_muchos").Set({}, false)
+            task.wait(0.5)
+            local vacio = controlesVisual.tags.Fila.Size.Y.Offset
+            elemento("tg_muchos").Set({ "uno" }, false)
+            task.wait(0.5)
+            local uno = controlesVisual.tags.Fila.Size.Y.Offset
+            elemento("tg_muchos").Set({ "alfa", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu" }, false)
+            task.wait(0.5)
+            local muchos = controlesVisual.tags.Fila.Size.Y.Offset
+            return vacio == 66 and uno == 92 and muchos > uno,
+                string.format("alto sin chips=%d con 1 chip=%d con 12 chips=%d (esperado 66 / 92 / mayor)", vacio, uno, muchos)
+        end)
+
+        prueba("Contador del Input: pastilla ambar al 80% y roja al limite", function()
+            local caja = controlesVisual.contador.Fila:FindFirstChildWhichIsA("TextBox")
+            local pastilla = caja:FindFirstChildWhichIsA("Frame")
+            if not pastilla then return false, "no existe la pastilla" end
+            caja.Text = "123"
+            task.wait(0.1)
+            local oculta = pastilla.Visible == false
+            caja.Text = "12345678"
+            task.wait(0.1)
+            local ambar = pastilla.Visible and pastilla.BackgroundColor3 == Color3.fromRGB(215, 160, 50)
+            caja.Text = "1234567890"
+            task.wait(0.1)
+            local roja = pastilla.Visible and pastilla.BackgroundColor3 == Color3.fromRGB(190, 60, 60)
+            local etiqueta = pastilla:FindFirstChildWhichIsA("TextLabel")
+            local texto = etiqueta and etiqueta.Text
+            caja.Text = ""
+            return oculta and ambar and roja and texto == "10/10",
+                string.format("oculta=%s ambar=%s roja=%s texto=%s", tostring(oculta), tostring(ambar), tostring(roja), tostring(texto))
+        end)
+
+        prueba("Historial: Deshacer y Rehacer restauran los valores en orden", function()
+            AlanUI:LimpiarHistorial()
+            local sliderAntes = elemento("tSlider").Get()
+            local togAntes = elemento("tTog").Get()
+            elemento("tTog").Set(not togAntes, true)
+            task.wait(0.15)
+            elemento("tSlider").Set(sliderAntes == 80 and 20 or 80, true)
+            task.wait(0.15)
+            local sliderDespues = elemento("tSlider").Get()
+            local info = AlanUI:ObtenerHistorial()
+            AlanUI:Deshacer()
+            local s1 = elemento("tSlider").Get() == sliderAntes
+            AlanUI:Deshacer()
+            local t1 = elemento("tTog").Get() == togAntes
+            local sinMas = not AlanUI:PuedeDeshacer()
+            AlanUI:Rehacer()
+            local t2 = elemento("tTog").Get() == (not togAntes)
+            AlanUI:Rehacer()
+            local s2 = elemento("tSlider").Get() == sliderDespues
+            local fin = not AlanUI:PuedeRehacer()
+            AlanUI:LimpiarHistorial()
+            return info.Deshacer == 2 and info.Rehacer == 0 and s1 and t1 and sinMas and t2 and s2 and fin,
+                string.format("historial=%d/%d s1=%s t1=%s sinMas=%s t2=%s s2=%s fin=%s", info.Deshacer, info.Rehacer,
+                    tostring(s1), tostring(t1), tostring(sinMas), tostring(t2), tostring(s2), tostring(fin))
+        end)
+
+        prueba("Historial: los cambios continuos de un slider forman una sola entrada", function()
+            AlanUI:LimpiarHistorial()
+            local original = elemento("tSlider").Get()
+            for i = 1, 8 do
+                elemento("tSlider").Set((original + i * 3) % 100, true)
+                task.wait(0.05)
+            end
+            local info = AlanUI:ObtenerHistorial()
+            AlanUI:Deshacer()
+            local volvio = elemento("tSlider").Get() == original
+            AlanUI:LimpiarHistorial()
+            return info.Deshacer == 1 and volvio, "entradas=" .. info.Deshacer .. " volvio al original=" .. tostring(volvio)
+        end)
+
+        prueba("Historial: un cambio nuevo borra el Rehacer", function()
+            AlanUI:LimpiarHistorial()
+            elemento("tTog").Set(not elemento("tTog").Get(), true)
+            task.wait(0.15)
+            AlanUI:Deshacer()
+            local habiaRehacer = AlanUI:PuedeRehacer()
+            elemento("tSlider").Set(elemento("tSlider").Get() == 33 and 44 or 33, true)
+            local ahoraNo = not AlanUI:PuedeRehacer()
+            AlanUI:LimpiarHistorial()
+            return habiaRehacer and ahoraNo, "habia Rehacer=" .. tostring(habiaRehacer) .. " despues del cambio nuevo=" .. tostring(not ahoraNo)
+        end)
+
+        prueba("Historial: los cambios en cadena (mismo instante) se deshacen juntos", function()
+            AlanUI:LimpiarHistorial()
+            local togAntes, sliderAntes = elemento("tTog").Get(), elemento("tSlider").Get()
+            elemento("tTog").Set(not togAntes, true)
+            elemento("tSlider").Set(sliderAntes == 60 and 10 or 60, true)
+            local info = AlanUI:ObtenerHistorial()
+            AlanUI:Deshacer()
+            local ok = elemento("tTog").Get() == togAntes and elemento("tSlider").Get() == sliderAntes
+            AlanUI:LimpiarHistorial()
+            return info.Deshacer == 1 and ok, "entradas=" .. info.Deshacer .. " ambos restaurados=" .. tostring(ok)
+        end)
+
+        prueba("Historial: el evento HistorialCambiado avisa los totales", function()
+            local ultimo = nil
+            local conexion = AlanUI.Eventos.HistorialCambiado:Connect(function(n, r) ultimo = { n, r } end)
+            AlanUI:LimpiarHistorial()
+            local inicial = ultimo and ultimo[1] == 0 and ultimo[2] == 0
+            elemento("tTog").Set(not elemento("tTog").Get(), true)
+            local tras = ultimo and ultimo[1] == 1 and ultimo[2] == 0
+            AlanUI:Deshacer()
+            local deshecho = ultimo and ultimo[1] == 0 and ultimo[2] == 1
+            conexion.Disconnect()
+            AlanUI:LimpiarHistorial()
+            return inicial and tras and deshecho, string.format("inicial=%s tras cambio=%s tras deshacer=%s", tostring(inicial), tostring(tras), tostring(deshecho))
+        end)
+
+        prueba("Historial: no registra labels ni flags de la interfaz", function()
+            AlanUI:LimpiarHistorial()
+            AlanUI.Elementos["sys_historial_estado"].Set("texto de prueba")
+            local info = AlanUI:ObtenerHistorial()
+            AlanUI:LimpiarHistorial()
+            return info.Deshacer == 0, "entradas=" .. info.Deshacer
+        end)
+
+        if not controlesSchema then
+            controlesSchema = {}
+            local secSchema = TabFixes:CrearSeccion("Schema (prueba)")
+            controlesSchema.mapa = secSchema:Construir({
+                { Control = "Toggle", Texto = "Schema toggle", Flag = "ts_tog", Defecto = true },
+                { Tipo = "Slider", Texto = "Schema slider (Tipo como alias)", Flag = "ts_slider", Min = 0, Max = 10, Defecto = 4 },
+                { Control = "Input", Tipo = "number", Texto = "Schema numero", Flag = "ts_num", Min = 0, Max = 99, Defecto = "7" },
+                { Control = "Dropdown", Texto = "Schema dropdown", Flag = "ts_drop", Opciones = { "A", "B" }, Defecto = "B" },
+                { Control = "Boton", Texto = "Schema boton", Callback = function() end },
+                { Control = "Magia", Texto = "No existe" },
+            })
+            controlesSchema.ventana = Ventana:ConstruirDesdeSchema({
+                Tabs = { {
+                    Nombre = "Schema tab", Icono = "🧬",
+                    Secciones = { {
+                        Nombre = "Creado desde un schema",
+                        Controles = {
+                            { Control = "Toggle", Texto = "Toggle de schema", Flag = "tsw_tog", Defecto = false },
+                            { Control = "Slider", Texto = "Slider de schema", Flag = "tsw_slider", Min = 0, Max = 100, Defecto = 25 },
+                        },
+                    } },
+                } },
+            })
+        end
+
+        prueba("Schema: Construir crea los controles y los devuelve por posicion y por Flag", function()
+            local m = controlesSchema.mapa
+            return m.ts_tog ~= nil and m[1] == m.ts_tog and m.ts_slider ~= nil and m.ts_drop ~= nil and m[5] ~= nil
+                and elemento("ts_tog").Get() == true and elemento("ts_slider").Get() == 4 and elemento("ts_drop").Get() == "B",
+                string.format("toggle=%s slider=%s dropdown=%s", tostring(elemento("ts_tog").Get()), tostring(elemento("ts_slider").Get()), tostring(elemento("ts_drop").Get()))
+        end)
+
+        prueba("Schema: Control + Tipo del Input (number) conviven", function()
+            local v = elemento("ts_num") and elemento("ts_num").Get()
+            return controlesSchema.mapa.ts_num ~= nil and tonumber(v) == 7, "valor=" .. tostring(v) .. " tipo=" .. type(v)
+        end)
+
+        prueba("Schema: un tipo desconocido avisa y se omite", function()
+            local avisado = false
+            for _, linea in ipairs(lineasWrapper) do
+                if linea:find("tipo desconocido en la posición 6", 1, true) then avisado = true end
+            end
+            return avisado and controlesSchema.mapa[6] == nil, "aviso en el log=" .. tostring(avisado)
+        end)
+
+        prueba("Schema: Ventana:ConstruirDesdeSchema crea tab, seccion y controles", function()
+            local r = controlesSchema.ventana
+            return r.tsw_tog ~= nil and r.tsw_slider ~= nil and elemento("tsw_slider").Get() == 25 and elemento("tsw_tog").Get() == false,
+                "slider=" .. tostring(elemento("tsw_slider") and elemento("tsw_slider").Get())
+        end)
+
+        prueba("Perfiles: duplicar, renombrar, exportar e importar", function()
+            if not (type(writefile) == "function" and type(isfile) == "function" and type(delfile) == "function") then
+                return true, "ejecutor sin soporte de archivos: omitida"
+            end
+            local gestor = AlanUI.SaveManager
+            local nombres = { "zz_t_origen", "zz_t_copia", "zz_t_renom", "zz_t_import", "zz_t_import2" }
+            local function ruta(n) return gestor.Carpeta .. "/" .. n .. ".json" end
+            local function limpiar() for _, n in ipairs(nombres) do pcall(function() gestor:Eliminar(n) end) end end
+            local pasos = {}
+            local function paso(nombre, ok) table.insert(pasos, nombre .. "=" .. tostring(ok)) return ok end
+            limpiar()
+            gestor:Guardar("zz_t_origen")
+            local a = paso("origen", isfile(ruta("zz_t_origen")))
+            a = paso("duplicar", gestor:Duplicar("zz_t_origen", "zz_t_copia") == true and isfile(ruta("zz_t_copia"))) and a
+            a = paso("duplicar repetido falla", gestor:Duplicar("zz_t_origen", "zz_t_copia") == false) and a
+            a = paso("renombrar", gestor:Renombrar("zz_t_copia", "zz_t_renom") == true
+                and isfile(ruta("zz_t_renom")) and not isfile(ruta("zz_t_copia"))) and a
+            local texto = gestor:Exportar("zz_t_origen")
+            local decodifica = type(texto) == "string" and (pcall(function() return game:GetService("HttpService"):JSONDecode(texto) end))
+            a = paso("exportar", decodifica) and a
+            a = paso("importar", gestor:Importar("zz_t_import", texto) == true and isfile(ruta("zz_t_import"))) and a
+            a = paso("importar sin sobreescribir falla", gestor:Importar("zz_t_import", texto) == false) and a
+            a = paso("importar sobreescribiendo", gestor:Importar("zz_t_import", texto, true) == true) and a
+            a = paso("importar texto invalido falla", gestor:Importar("zz_t_import2", "esto no es json") == false
+                and not isfile(ruta("zz_t_import2"))) and a
+            a = paso("nombre invalido falla", gestor:Duplicar("zz_t_origen", "a/b") == false) and a
+            limpiar()
+            return a, table.concat(pasos, " | ")
+        end)
+
+        prueba("Profiler se ejecuta sin error", function()
+            AlanUI:Profiler()
+            return true
+        end)
+
+        local fallos = 0
+        for _, r in ipairs(resultados) do
+            if r:find("FAIL", 1, true) then fallos = fallos + 1 end
+        end
+        print(string.format("[TEST] Pruebas terminadas: %d total, %d fallos", #resultados, fallos))
+        AlanUI:Notificar({
+            Titulo = fallos == 0 and "✅ Pruebas OK" or ("🔴 " .. fallos .. " fallos"),
+            Texto = "Pulsa 📥 Guardar log para exportar el resultado",
+            Duracion = 5,
+        })
+        ejecutando = false
+    end)
+end
+
+SecAcciones:Boton({ Texto = "▶️ Ejecutar todas las pruebas", Callback = ejecutarPruebas })
+
+SecAcciones:Boton({
+    Texto = "Abrir Confirmar (3 botones)",
+    Callback = function()
+        AlanUI:Confirmar({
+            Titulo = "¿Eliminar el perfil?",
+            Contenido = "Esta acción no se puede deshacer.",
+            Icono = "⚠️",
+            Botones = {
+                { Texto = "Eliminar", Variante = "danger", Callback = function() print("[TEST] Confirmar: Eliminar") end },
+                { Texto = "Guardar", Variante = "primary", Callback = function() print("[TEST] Confirmar: Guardar") end },
+                { Texto = "Cancelar", Variante = "tertiary", Callback = function() print("[TEST] Confirmar: Cancelar") end },
+            },
+        })
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "Abrir Confirmar apilado",
+    Callback = function()
+        AlanUI:Confirmar({
+            Titulo = "Primer modal", Contenido = "Pulsa Siguiente para abrir otro encima.",
+            BotonAceptar = {
+                Texto = "Siguiente",
+                Callback = function()
+                    AlanUI:Confirmar({ Titulo = "Segundo modal", Contenido = "Este quedó encima del primero." })
+                end,
+            },
+            BotonCancelar = { Texto = "Cerrar" },
+        })
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "➕ Agregar opción al Dropdown con API",
+    Callback = function()
+        contadorPerfiles = contadorPerfiles + 1
+        local ok = dropdownApi.AgregarOpcion("Perfil " .. contadorPerfiles)
+        print("[TEST] AgregarOpcion -> " .. tostring(ok))
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "➖ Eliminar la última opción del Dropdown con API",
+    Callback = function()
+        local ok = dropdownApi.EliminarOpcion("Perfil " .. contadorPerfiles)
+        if ok then contadorPerfiles = contadorPerfiles - 1 end
+        print("[TEST] EliminarOpcion -> " .. tostring(ok))
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "🗑️ Limpiar todas las opciones del Dropdown con API",
+    Callback = function()
+        dropdownApi.LimpiarOpciones()
+        contadorPerfiles = 0
+        print("[TEST] LimpiarOpciones")
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "↩️ Restaurar opciones del Dropdown con API",
+    Callback = function()
+        dropdownApi.ActualizarOpciones({ "Perfil 1", "Perfil 2" })
+        contadorPerfiles = 2
+    end,
+})
+
+local contadorTags = 0
+SecAcciones:Boton({
+    Texto = "🏷️ Agregar un tag al header",
+    Callback = function()
+        contadorTags = contadorTags + 1
+        local colores = { "info", "success", "danger", "neutral", "warning" }
+        Ventana:AgregarTag({ Texto = "TAG " .. contadorTags, Color = colores[(contadorTags - 1) % #colores + 1] })
+    end,
+})
+
+local estadosInteract = { "🔴 Detenido", "🔄 Cargando...", "🟢 Activo" }
+local indiceInteract = 0
+SecAcciones:Boton({
+    Texto = "🔁 Cambiar el texto Interact (ciclo)",
+    Callback = function()
+        if not (controlesLote and controlesLote.interact) then
+            print("[TEST] Interact todavia no existe: espera a que terminen las pruebas")
+            return
+        end
+        indiceInteract = indiceInteract % #estadosInteract + 1
+        controlesLote.interact:SetInteract(estadosInteract[indiceInteract])
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "🔒 Bloquear el Slider de prueba",
+    Callback = function() sliderPrueba:Lock("Requiere AutoFarm activo") end,
+})
+
+SecAcciones:Boton({
+    Texto = "🔓 Desbloquear el Slider de prueba",
+    Callback = function() sliderPrueba:Unlock() end,
+})
+
+SecAcciones:Boton({
+    Texto = "✨ Resaltar el Slider de prueba (3s)",
+    Callback = function() sliderPrueba:Highlight({ Duracion = 3 }) end,
+})
+
+SecAcciones:Boton({
+    Texto = "📥 Guardar log",
+    Tooltip = "Escribe " .. RUTA_LOG .. " en la carpeta del ejecutor",
+    Callback = function()
+        local ok = guardarLog("manual")
+        AlanUI:Notificar({
+            Titulo = ok and "📥 Log guardado" or "⚠️ No se pudo guardar",
+            Texto = ok and RUTA_LOG or "Revisa la consola",
+            Duracion = 3,
+        })
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "🗑️ Limpiar log",
+    Callback = function()
+        lineasWrapper, lineasMotor, resultados = {}, {}, {}
+        print("[TEST] Log limpiado")
+    end,
+})
+
+SecAcciones:Boton({
+    Texto = "🧹 Destruir ventana",
+    Callback = function()
+        conexionMotor:Disconnect()
+        Ventana:Destruir()
+    end,
+})
+
+-- ── Arranque automático ─────────────────────────────────────────
+task.delay(1, ejecutarPruebas)
+
+task.delay(SEGUNDOS_WATCHDOG, function()
+    guardarLog("auto-guardado tras " .. SEGUNDOS_WATCHDOG .. "s")
+end)
+
+print("[TEST] Test Suite v4 creada. Las pruebas corren solas; el log se guarda a los " .. SEGUNDOS_WATCHDOG .. "s.")
