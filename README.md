@@ -4,6 +4,8 @@
 
 <p align="center">
   <a href="README_en.md">🇬🇧 Read in English</a>
+  &nbsp;·&nbsp;
+  <a href="#-probar-la-vitrina-interactiva">🎮 Probar la vitrina</a>
 </p>
 
 Librería de interfaz para scripts de Roblox, optimizada y pensada para funcionar bien tanto en PC como en móvil. Se construyó siguiendo un orden de prioridades claro:
@@ -469,7 +471,7 @@ game:GetService("TweenService"):Create(miFrame, info, {BackgroundTransparency = 
 Carga la librería con `loadstring`:
 
 ```lua
-local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlanbeikersFF/AlanUI/main/AlanUI.lua"))()
+local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/AlanUI.lua"))()
 
 -- ── CREAR LA VENTANA PRINCIPAL ──
 local Ventana = AlanUI:CrearVentana({
@@ -515,6 +517,19 @@ AlanUI:Notificar({
 > 🧭 **`Orientacion` (opcional):** `CrearVentana` también acepta `Orientacion = "horizontal"` para arrancar con las pestañas en una barra superior en vez de la barra lateral (se puede cambiar después con `Ventana:CambiarOrientacion`).
 
 > ℹ️ **Nota importante:** al llamar `CrearVentana`, la interfaz **ya viene con la pestaña "🔧 Preinstalada" agregada automáticamente** (FPS, info del ejecutor, selector de tema, orientación, tamaño de ventana). No necesitas crearla ni llamarla — ya está ahí cuando la ventana termina de abrirse. Solo si por alguna razón NO la quieres, debes desactivarla explícitamente (ver sección de abajo).
+
+---
+
+## 🎮 Probar la vitrina interactiva
+
+¿Prefieres ver todo funcionando antes de leer la referencia? Ejecuta la **vitrina**: una ventana de AlanUI con **5 pestañas** (Controles, Ventana y layout, Alertas, Estados, APIs y diagnóstico) donde cada control y cada función aparece en vivo, con un tooltip que explica qué demuestra.
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/examples/AlanUI_Vitrina.lua"))()
+```
+
+- No necesitas cargar AlanUI antes: la vitrina la carga sola.
+- El código está en [`examples/AlanUI_Vitrina.lua`](examples/AlanUI_Vitrina.lua), así que también sirve como **ejemplo completo y comentado** para copiar.
 
 ---
 
@@ -1576,6 +1591,8 @@ Ventana:Destruir()
 
 ## 🧩 Ejemplo completo (todas las funciones juntas)
 
+> 🎮 ¿Prefieres verlo funcionando en el juego? Ejecuta la [vitrina interactiva](#-probar-la-vitrina-interactiva).
+
 Este es un script de referencia que usa **todas** las funciones de AlanUI, tal como lo escribiría un desarrollador usando la librería en un script real. Puedes copiarlo, pegarlo en un ejecutor, y ver cómo se comporta cada pieza.
 
 ```lua
@@ -1584,7 +1601,7 @@ Este es un script de referencia que usa **todas** las funciones de AlanUI, tal c
 --  Muestra el uso de cada función pública de la librería.
 -- ══════════════════════════════════════════════════════════════
 
-local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/refs/heads/main/AlanUI.lua"))()
+local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/AlanUI.lua"))()
 
 -- ── 1. VENTANA PRINCIPAL ──
 -- La pestaña "🔧 Preinstalada" se agrega SOLA aquí, no hace falta llamarla.
