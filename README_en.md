@@ -1525,7 +1525,7 @@ This is a reference script that uses **every** public function in AlanUI, the wa
 --  Demonstrates every public function of the library.
 -- ══════════════════════════════════════════════════════════════
 
-local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/AlanUI.lua"))()
+local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/refs/heads/main/AlanUI.lua"))()
 
 -- ── 1. MAIN WINDOW ──
 -- The "🔧 Preinstalled" tab is added automatically here — no need to call it.
