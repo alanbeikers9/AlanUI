@@ -1584,7 +1584,7 @@ Este es un script de referencia que usa **todas** las funciones de AlanUI, tal c
 --  Muestra el uso de cada función pública de la librería.
 -- ══════════════════════════════════════════════════════════════
 
-local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/AlanbeikersFF/AlanUI/main/AlanUI.lua"))()
+local AlanUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/refs/heads/main/AlanUI.lua"))()
 
 -- ── 1. VENTANA PRINCIPAL ──
 -- La pestaña "🔧 Preinstalada" se agrega SOLA aquí, no hace falta llamarla.
