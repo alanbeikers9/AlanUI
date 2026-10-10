@@ -50,7 +50,7 @@ Ronda de nuevas capacidades de la API. El código de la librería ya las incluí
 ## 🎬 Animaciones: revisión de consistencia (v2.12.5)
 
 - **Feedback directo sin tween:** lo que responde al dedo o cursor mientras se arrastra (relleno de los sliders, tamaño y escala de la ventana desde la pestaña Preinstalada, y el número del TextBox) ya no se anima: sigue el movimiento al instante. Lo que cambia por código (carga de perfil, `Set()`) sí se anima.
-- **Todas las duraciones pasan por `AlanUI.Motion`:** no quedan números sueltos en los tweens. `Motion.Directo = 0` aplica el cambio sin tween.
+- **Las duraciones de las animaciones de la interfaz salen de `AlanUI.Motion`.** `Motion.Directo = 0` aplica el cambio sin tween. Quedan fijos a propósito algunos efectos decorativos o continuos (el pulso de `Highlight`, el giro del arcoíris de las tags, la sacudida del bloqueo) y los temporizadores de interacción (pulsación larga, autorepetición del `NumberStepper`).
 - **Curvas con sentido:** `EaseEntrar` (Quart Out) para lo que entra, `EaseSalir` (Quad In) para lo que sale, `EasePop` para rebotes. Antes `EaseSalir` era igual a `EaseEntrar`.
 - **Pestañas y botones de ventana con el mismo click que el resto:** ya no usan `MouseButton1Click` directo; se benefician del umbral anti-scroll y del pop al tocar.
 - **Entradas y salidas visibles:** las pastillas de `AgregarTag` y los chips de `TagInput` entran con pop; los chips salen encogiéndose; la flecha de las secciones y paneles gira animada.
@@ -650,6 +650,24 @@ SeccionCombate:Dropdown({
 > })
 > ```
 
+#### Opciones dinámicas del Dropdown
+Un `Dropdown` puede cambiar su lista de opciones **después** de creado — útil para listas que dependen del juego (jugadores, armas, perfiles guardados). El control devuelto expone cuatro funciones:
+
+```lua
+local dd = SeccionCombate:Dropdown({ Texto = "Objetivo", Opciones = { "Ninguno" }, Defecto = "Ninguno" })
+
+dd.ActualizarOpciones({ "Ana", "Beto", "Carla" })  -- reemplaza TODA la lista
+dd.AgregarOpcion("Dani")                            --> true  (false si es texto vacío o ya existe)
+dd.EliminarOpcion("Beto")                           --> true  (false si no estaba)
+dd.LimpiarOpciones()                                -- deja la lista vacía
+```
+
+- `AgregarOpcion` y `EliminarOpcion` aceptan llamada con `.` o con `:`. **`ActualizarOpciones` y `LimpiarOpciones` se llaman con punto** (`dd.ActualizarOpciones(lista)`), igual que en el resto de la librería.
+- `AgregarOpcion` solo agrega **textos**. Para opciones con descripción, ícono o bloqueo (ver "Opciones enriquecidas"), usa `ActualizarOpciones` con la lista completa.
+- Si la opción elegida **ya no está** en la nueva lista, la selección se vacía (el `Flag` queda en `nil`) y **no se ejecuta el `Callback`**. En modo `Multi` se conservan solo las opciones que siguen existiendo.
+- Los botones que siguen existiendo se reutilizan: solo se crean o destruyen los que cambiaron.
+- Si la lista supera cierto tamaño, aparece sola la caja de búsqueda.
+
 #### 4. Boton (Botón)
 Ejecuta una función inmediatamente al hacer clic.
 
@@ -1023,6 +1041,27 @@ Devuelve una tabla `Flag → control` con todos los controles creados que tengan
 
 #### `Ventana:CrearTab(nombre, icono)` — formas del ícono
 El segundo parámetro acepta: un emoji/carácter (`"🏠"`), un asset como string (`"rbxassetid://123"`), un número (se interpreta como ID de asset) o una tabla `{ Icono = ..., ColorIcono = Color3 }` para teñir un ícono de imagen. Si ya existe una pestaña con ese nombre, no se duplica: avisa con una notificación y devuelve la existente.
+
+#### El objeto `Tab` que devuelve `CrearTab`
+Además de `CrearSeccion` y `CrearDivisor`, el objeto tiene estos miembros, útiles para cambiar de pestaña por código o personalizarla:
+
+| Miembro | Qué es |
+|---|---|
+| `Nombre` | El nombre con el que se creó la pestaña. |
+| `Seleccionar()` | Muestra esta pestaña (como si el usuario la tocara). Se llama con **punto**: `Tab.Seleccionar()`. |
+| `Pagina` | El `ScrollingFrame` con el contenido de la pestaña. |
+| `Boton` / `BotonLat` | Botón de la barra lateral (`Boton` es un alias de `BotonLat`). |
+| `BotonHoriz` | Botón de la barra superior (orientación horizontal). |
+| `IndicadorLat` / `IndicadorHoriz` | La barra de color que marca la pestaña activa en cada orientación. |
+| `Secciones` | Lista de las secciones creadas en esta pestaña. |
+
+La ventana guarda todas sus pestañas, en orden de creación, en `Ventana.Tabs`.
+
+```lua
+local TabAjustes = Ventana:CrearTab("Ajustes", "⚙️")
+TabAjustes.Seleccionar()                    -- abre esta pestaña por código
+print(#Ventana.Tabs, TabAjustes.Nombre)
+```
 
 #### `Ventana:GuardarConfiguracion()` / `Ventana:CargarConfiguracion()`
 Guarda o carga manualmente todos los Flags actuales en el archivo de configuración de esta ventana (el que definiste en `NombreConfig`). No es necesario llamarlas normalmente —el autoguardado ya lo hace solo— pero son útiles para un botón de "Guardar ahora" o "Restaurar" en tu propio script.

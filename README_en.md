@@ -50,7 +50,7 @@ A round of new API capabilities. The library code already included them, but the
 ## 🎬 Animation consistency review (v2.12.5)
 
 - **Direct feedback without tween:** what responds to the finger or cursor while dragging (slider fill, window size and scale from the Preinstalled tab, and the TextBox number) no longer animates: it follows the movement instantly. Changes made by code (loading a profile, `Set()`) still animate.
-- **Every duration goes through `AlanUI.Motion`:** no loose numbers left in tweens. `Motion.Directo = 0` applies a change without a tween.
+- **Interface animation durations come from `AlanUI.Motion`.** `Motion.Directo = 0` applies a change without a tween. A few decorative or continuous effects are fixed on purpose (the `Highlight` pulse, the tags' rainbow spin, the lock shake) as are interaction timers (long-press, `NumberStepper` auto-repeat).
 - **Curves with purpose:** `EaseEntrar` (Quart Out) for things that enter, `EaseSalir` (Quad In) for things that leave, `EasePop` for bounces. Before, `EaseSalir` was identical to `EaseEntrar`.
 - **Tabs and window buttons use the same click as everything else:** they no longer use a plain `MouseButton1Click`; they get the anti-scroll threshold and the touch pop.
 - **Visible entrances and exits:** `AgregarTag` pills and `TagInput` chips pop in; chips shrink out when removed; the arrow of collapsible sections and panels rotates with animation.
@@ -360,6 +360,7 @@ This round comes from several internal audits focused on performance, connection
 ### 🎨 Visual
 
 - Sidebar/top-bar tab buttons now actually change color when the theme changes (they used to stay stuck with whatever theme was active when they were created).
+- The tooltip "?" circle no longer overlaps the text on narrow rows with long right-aligned values (for example "Memory (approx...)" or "Interface size" on the Preinstalled tab).
 
 ---
 
@@ -622,6 +623,24 @@ SeccionCombate:Dropdown({
 >     Defecto = "Fists",
 > })
 > ```
+
+#### Dynamic Dropdown options
+A `Dropdown` can change its option list **after** it was created — useful for lists that depend on the game (players, weapons, saved profiles). The returned control exposes four functions:
+
+```lua
+local dd = SeccionCombate:Dropdown({ Texto = "Target", Opciones = { "None" }, Defecto = "None" })
+
+dd.ActualizarOpciones({ "Ana", "Beto", "Carla" })  -- replaces the WHOLE list
+dd.AgregarOpcion("Dani")                            --> true  (false if empty text or already there)
+dd.EliminarOpcion("Beto")                           --> true  (false if it wasn't there)
+dd.LimpiarOpciones()                                -- empties the list
+```
+
+- `AgregarOpcion` and `EliminarOpcion` accept being called with `.` or `:`. **`ActualizarOpciones` and `LimpiarOpciones` are called with a dot** (`dd.ActualizarOpciones(list)`), like the rest of the library.
+- `AgregarOpcion` only adds **plain texts**. For options with a description, icon or lock (see "Rich options"), use `ActualizarOpciones` with the full list.
+- If the selected option is **no longer** in the new list, the selection is cleared (the `Flag` becomes `nil`) and the `Callback` is **not** run. In `Multi` mode only the options that still exist are kept.
+- Buttons that still exist are reused: only the ones that changed are created or destroyed.
+- If the list grows past a certain size, the search box appears by itself.
 
 #### 4. Button (`:Boton()` in code)
 Triggers a function immediately on click. Note the method itself is named `Boton` (Spanish) — like the rest of the library's method names.
@@ -987,6 +1006,27 @@ Returns a `Flag → control` table with every created control that has a `Flag`.
 #### `Ventana:CrearTab(nombre, icono)` — icon forms
 The second parameter accepts: an emoji/character (`"🏠"`), an asset as a string (`"rbxassetid://123"`), a number (treated as an asset ID), or a table `{ Icono = ..., ColorIcono = Color3 }` to tint an image icon. If a tab with that name already exists it isn't duplicated: a notification is shown and the existing one is returned.
 
+#### The `Tab` object returned by `CrearTab`
+Besides `CrearSeccion` and `CrearDivisor`, the object has these members, useful to switch tabs from code or customize one:
+
+| Member | What it is |
+|---|---|
+| `Nombre` | The name the tab was created with. |
+| `Seleccionar()` | Shows this tab (as if the user tapped it). Called with a **dot**: `Tab.Seleccionar()`. |
+| `Pagina` | The `ScrollingFrame` holding the tab's content. |
+| `Boton` / `BotonLat` | Side-bar button (`Boton` is an alias of `BotonLat`). |
+| `BotonHoriz` | Top-bar button (horizontal orientation). |
+| `IndicadorLat` / `IndicadorHoriz` | The color bar marking the active tab in each orientation. |
+| `Secciones` | List of the sections created in this tab. |
+
+The window keeps all its tabs, in creation order, in `Ventana.Tabs`.
+
+```lua
+local TabAjustes = Ventana:CrearTab("Settings", "⚙️")
+TabAjustes.Seleccionar()                    -- opens this tab from code
+print(#Ventana.Tabs, TabAjustes.Nombre)
+```
+
 #### `Ventana:GuardarConfiguracion()` / `Ventana:CargarConfiguracion()`
 Manually saves or loads all current Flags to this window's config file (the one set in `NombreConfig`). You don't normally need to call these — autosave already handles it — but they're useful for a "Save now" or "Restore" button in your own script.
 
@@ -1287,6 +1327,12 @@ AlanUI:ObtenerElemento("speed")    -- full control: { Set(v), Get() }
 
 #### 🔌 `AlanUI:DesconectarYLimpiar(conexion)`
 Disconnects a Roblox connection and removes it from the internal cleanup registry in one step. Only needed if your own script manually registers connections via `AlanUI:RegistrarConexion()` and needs to disconnect one early.
+
+```lua
+local conexion = AlanUI:RegistrarConexion(workspace.ChildAdded:Connect(function() end))
+-- ... later, if it's no longer needed:
+AlanUI:DesconectarYLimpiar(conexion)
+```
 
 #### 🩺 On-Demand Profiler (`AlanUI:Profiler()`)
 Returns an instant snapshot of the library's internal state — Flags, Elements, connections, threads, drawings, GUI objects, and approximate memory — and also prints it to the console in a single line. Complements the Health panel in the Preinstalled tab: that one runs live while the tab is open, this one you can request at any time from your own code.
