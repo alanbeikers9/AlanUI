@@ -526,7 +526,7 @@ AlanUI:Notificar({
 Would you rather see everything working before reading the reference? Run the **showcase**: an AlanUI window with **5 tabs** (Controls, Window & layout, Alerts, States, APIs & diagnostics) where every control and function appears live, with a tooltip explaining what it demonstrates.
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/examples/AlanUI_Vitrina.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/refs/heads/main/AlanUI_Vitrina.lua"))()
 ```
 
 - You don't need to load AlanUI first: the showcase loads it by itself.
