@@ -525,7 +525,7 @@ AlanUI:Notificar({
 ¿Prefieres ver todo funcionando antes de leer la referencia? Ejecuta la **vitrina**: una ventana de AlanUI con **5 pestañas** (Controles, Ventana y layout, Alertas, Estados, APIs y diagnóstico) donde cada control y cada función aparece en vivo, con un tooltip que explica qué demuestra.
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/main/examples/AlanUI_Vitrina.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/refs/heads/main/AlanUI_Vitrina.lua"))()
 ```
 
 - No necesitas cargar AlanUI antes: la vitrina la carga sola.
