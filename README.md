@@ -166,6 +166,11 @@ Esta versión reúne cuatro cosas: el **modo Mini** y el cambio de modo en vivo,
 
 > ℹ️ Este README describía la librería antes de que existiera el modo Mini, y por eso todo lo de Mini aparece aquí por primera vez. Los campos están documentados con sus valores reales, verificados contra el código.
 
+### 🛠️ Correcciones
+
+* `Label`: el registro en `AlanUI.Elementos[flag]` ahora también expone `SetColor` y `SetTexto`, igual que el control devuelto por `:Label()`. Antes solo tenía `Set` y `Get`, y llamar `AlanUI.Elementos["sys_rendimiento"].SetColor(...)` (la fila de Rendimiento de la Preinstalada) daba `attempt to call a nil value` en cada ciclo.
+* Vitrina: la primera línea cargaba la propia vitrina en vez de la librería y no asignaba `AlanUI`, lo que causaba `attempt to index nil with 'Opciones'`. Ahora carga `AlanUI.lua` y lo guarda en `AlanUI`.
+
 ### 📱 Modo Mini
 
 `CrearVentana({ Mini = true })` crea una interfaz compacta, pensada para scripts con pocos controles:

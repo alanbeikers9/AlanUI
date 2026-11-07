@@ -9015,6 +9015,9 @@ function AlanUI:CrearVentana(config)
                     lblValor.TextColor3 = color
                 end
 
+                AlanUI.Elementos[flag].SetColor = setColor
+                AlanUI.Elementos[flag].SetTexto = function(v) fijar(v) end
+
                 -- Auto-update: opcional, solo si el dev paso 'Cada' + 'Actualizar'.
                 -- El callback 'Actualizar' se llama cada 'Cada' segundos, y su
                 -- retorno se aplica al label como si fuera un Set() (pero sin

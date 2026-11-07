@@ -168,6 +168,11 @@ This version brings together four things: **Mini mode** and live mode switching,
 
 > ℹ️ This README described the library before Mini mode existed, so everything about Mini appears here for the first time. The fields are documented with their real values, checked against the code.
 
+### 🛠️ Fixes
+
+* `Label`: the entry in `AlanUI.Elementos[flag]` now also exposes `SetColor` and `SetTexto`, matching the control returned by `:Label()`. It used to have only `Set` and `Get`, so calling `AlanUI.Elementos["sys_rendimiento"].SetColor(...)` (the Performance row of the Preinstalled tab) raised `attempt to call a nil value` every cycle.
+* Showcase: the first line loaded the showcase itself instead of the library and never assigned `AlanUI`, causing `attempt to index nil with 'Opciones'`. It now loads `AlanUI.lua` and stores it in `AlanUI`.
+
 ### 📱 Mini mode
 
 `CrearVentana({ Mini = true })` creates a compact interface, meant for scripts with few controls:
