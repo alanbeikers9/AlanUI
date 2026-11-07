@@ -5,7 +5,7 @@
 -- ══════════════════════════════════════════════════════════════
 
 -- Asegúrate de tener ambos archivos en la misma carpeta de tu ejecutor
-loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/refs/heads/main/AlanUI_Vitrina.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/alanbeikers9/AlanUI/refs/heads/main/AlanUI.lua"))()
 
 -- Iconos propios activos para la pestaña Preinstalada y los Dialogo() por tipo.
 AlanUI.Opciones.IconosPropios = true
